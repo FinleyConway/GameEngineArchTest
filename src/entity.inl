@@ -31,12 +31,16 @@ void Entity::add(Args&&... args) {
 
 template<typename T>
 T& Entity::get() {
-    if (!has<T>()) {
-        // at a log + assert, maybe spdlog in the future
-        assert((void("Entity does not have this component"), false));
-    }
+    if (!has<T>()) assert((void("Entity does not have this component"), false)); // at a log + assert, maybe spdlog in the future
 
     return m_scene->m_registry.template get<T>(m_handle);
+}
+
+template<typename T>
+T* Entity::try_get() {
+    if (!has<T>()) return nullptr;
+
+    return &m_scene->m_registry.template get<T>(m_handle);
 }
 
 template<typename T>
@@ -46,9 +50,7 @@ bool Entity::has() {
 
 template<typename T>
 void Entity::remove() {
-    if (valid()) {
-        m_scene->m_registry.template remove<T>(m_handle);
-    }
+    if (valid()) m_scene->m_registry.template remove<T>(m_handle);
 }
 
 inline void Entity::kill() {

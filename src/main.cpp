@@ -1,7 +1,7 @@
 #include <iostream>
 #include "scene.h"
 
-class Trasform 
+class Transform 
 {
 public:
     float x() const { return m_x; }
@@ -23,7 +23,7 @@ class Movement
 {
 public:
     void update(Entity e, float dt) {
-        auto& transform = e.get<Trasform>();
+        auto& transform = e.get<Transform>();
 
         transform.x(transform.x() + 50 * dt);
         transform.y(transform.y() + 50 * dt);
@@ -35,7 +35,7 @@ public:
 int main() {
     Scene scene;
     auto e = scene.create_entity();
-    e.add<Trasform>();
+    e.add<Transform>();
     e.add<Movement>();
     
     scene.start();

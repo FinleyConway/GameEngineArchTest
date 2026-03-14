@@ -16,6 +16,9 @@ public:
     T& get();
 
     template<typename T>
+    T* try_get();
+
+    template<typename T>
     bool has();
 
     template<typename T>
