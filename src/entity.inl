@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 #include "scene.h"
 #include "component_interfaces.h"
 
@@ -17,6 +19,10 @@ void Entity::add(Args&&... args) {
         // add component and apply it to the update group
         m_scene->m_registry.template emplace<T>(m_handle, std::forward<Args>(args)...);
 
+        if constexpr (Initialisable<T>) {
+            m_scene->template register_start_system<T>();
+        }
+
         if constexpr (Updatable<T>) {
             m_scene->template register_update_system<T>();
         }
@@ -25,6 +31,11 @@ void Entity::add(Args&&... args) {
 
 template<typename T>
 T& Entity::get() {
+    if (!has<T>()) {
+        // at a log + assert, maybe spdlog in the future
+        assert((void("Entity does not have this component"), false));
+    }
+
     return m_scene->m_registry.template get<T>(m_handle);
 }
 
