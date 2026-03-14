@@ -19,10 +19,10 @@ private:
     float m_y = 0;
 };
 
-class Movement : public IUpdatable
+class Movement
 {
-protected:
-    void update(Entity e, float dt) override {
+public:
+    void update(Entity e, float dt) {
         auto& transform = e.get<Trasform>();
 
         transform.x(transform.x() + 50 * dt);
