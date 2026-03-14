@@ -1,35 +1,53 @@
 #pragma once
 
 #include "scene.h"
+#include "component_interfaces.h"
 
-template<typename T>
-T* Entity::add_component()
-{
-    if (!is_valid()) return nullptr;
+template<typename T, typename... Args>
+void Entity::add(Args&&... args) {
+    // make sure tat the entity is alive
+    if (valid()) {
+        // check if it already exists
+        if (has<T>()) {
+            // if it does we log and return
+            // add log
+            return;
+        }
 
-    return m_scene->get_entity_storage(m_handle).template add_component<T>(*this);
+        // add component and apply it to the update group
+        m_scene->m_registry.template emplace<T>(m_handle, std::forward<Args>(args)...);
+
+        if constexpr (Updatable<T>) {
+            m_scene->template register_update_system<T>();
+        }
+    }
 }
 
 template<typename T>
-T* Entity::get_component()
-{
-    if (!is_valid()) return nullptr;
-
-    return m_scene->get_entity_storage(m_handle).template get_component<T>();
+T& Entity::get() {
+    return m_scene->m_registry.template get<T>(m_handle);
 }
 
 template<typename T>
-const T* Entity::get_component() const
-{
-    if (!is_valid()) return nullptr;
-
-    return m_scene->get_entity_storage(m_handle).template get_component<T>();
+bool Entity::has() {
+    return m_scene->m_registry.template all_of<T>(m_handle);
 }
 
 template<typename T>
-bool Entity::remove_component() const
-{
-    if (!is_valid()) return false;
-
-    return m_scene->get_entity_storage(m_handle).template remove_component<T>();
+void Entity::remove() {
+    if (valid()) {
+        m_scene->m_registry.template remove<T>(m_handle);
+    }
 }
+
+inline void Entity::kill() {
+    m_scene->m_registry.destroy(m_handle);
+    m_handle = entt::null;
+}
+
+inline bool Entity::valid() const {
+    return m_scene->m_registry.valid(m_handle);
+}
+
+inline Entity::Entity(entt::entity handle, Scene* scene)
+    : m_handle(handle), m_scene(scene) {}

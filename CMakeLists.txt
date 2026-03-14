@@ -4,7 +4,10 @@ project(test LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_subdirectory(vendor/entt)
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/scene.cpp
 )
+
+target_link_libraries(test PRIVATE EnTT::EnTT)

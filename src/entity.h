@@ -1,32 +1,36 @@
 #pragma once
 
-#include "handle.h"
+#include <entt/entt.hpp>
 
-class Scene; 
+class Scene;
 
 class Entity
 {
 public:
     Entity() = default;
 
-    Handle::Type get_id() { return m_handle.id; }
+    template<typename T, typename... Args>
+    void add(Args&&... args);
 
-    template<typename T> T* add_component();
-    template<typename T> T* get_component();
-    template<typename T> const T* get_component() const;
-    template<typename T> bool remove_component() const;
+    template<typename T>
+    T& get();
 
-    bool is_valid() const { return m_handle.is_valid() && m_scene != nullptr; }
+    template<typename T>
+    bool has();
+
+    template<typename T>
+    void remove();
+
+    void kill();
+
+    bool valid() const;
 
 private:
     friend class Scene;
-    friend class EntityStorage;
 
-    Entity(Handle handle, Scene* scene) : m_handle(handle), m_scene(scene) {}
+    Entity(entt::entity handle, Scene* scene);
 
 private:
-    Handle m_handle;
+    entt::entity m_handle = entt::null;
     Scene* m_scene = nullptr;
 };
-
-#include "entity.inl"

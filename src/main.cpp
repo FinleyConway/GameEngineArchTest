@@ -1,12 +1,23 @@
+#include <iostream>
 #include "scene.h"
-#include "transform.h"
+
+struct Trasform {
+    float x = 10, y = 50;
+
+    void update(Entity entity, float dt) {
+        std::cout << to_str() << std::endl;
+    }
+
+    std::string to_str() {
+        return std::format("[x:{}, y:{}]", x, y);
+    }
+};
 
 int main() {
-     Scene s(1000);
-                                                 //                                        vvv this could be the default parameter 
-    s.create_entity().add_component<Trasform>(); // add_component<Transform>(UpdateType::on_event | UpdateType::on_update)
-
+    Scene scene;
+    scene.create_entity().add<Trasform>();
+    
     while (true) {
-        s.update();
+        scene.update(0.016f);
     }
 }
