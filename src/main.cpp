@@ -1,4 +1,7 @@
 #include <iostream>
+
+#include <SFML/Graphics.hpp>
+
 #include "scene.h"
 
 class Transform 
@@ -33,14 +36,27 @@ public:
 };
 
 int main() {
-    Scene scene;
-    auto e = scene.create_entity();
-    e.add<Transform>();
-    e.add<Movement>();
-    
-    scene.start();
+    sf::RenderWindow window(sf::VideoMode({ 200, 200 }), "Test");
 
-    while (true) {
-        scene.update(0.016f);
+    while (window.isOpen()) {
+        while (const std::optional event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
+                window.close();
+            }
+        }
+
+        window.clear();
+        window.display();
     }
+
+    // Scene scene;
+    // auto e = scene.create_entity();
+    // e.add<Transform>();
+    // e.add<Movement>();
+    
+    // scene.start();
+
+    // while (true) {
+    //     scene.update(0.016f);
+    // }
 }
