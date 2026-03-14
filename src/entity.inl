@@ -30,17 +30,22 @@ void Entity::add(Args&&... args) {
 }
 
 template<typename T>
-T& Entity::get() {
+const T& Entity::get() {
     if (!has<T>()) assert((void("Entity does not have this component"), false)); // at a log + assert, maybe spdlog in the future
 
     return m_scene->m_registry.template get<T>(m_handle);
 }
 
 template<typename T>
-T* Entity::try_get() {
+const T* Entity::try_get() {
     if (!has<T>()) return nullptr;
 
     return &m_scene->m_registry.template get<T>(m_handle);
+}
+
+template<typename T, typename Fn>
+void Entity::mutate(Fn&& fn) {
+    m_scene->m_registry.patch<T>(m_handle, std::forward<Fn>(fn));
 }
 
 template<typename T>

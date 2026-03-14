@@ -7,36 +7,44 @@
 class Transform 
 {
 public:
-    float x() const { return m_x; }
-    void x(float x) { m_x = x; }
+    float x = 0;
+    float y = 0;
 
-    float y() const { return m_y; }
-    void y(float y) { m_y = y; }
-
-    std::string to_str() {
-        return std::format("[x:{}, y:{}]", m_x, m_y);
+    std::string to_str() const {
+        return std::format("[x:{}, y:{}]", x, y);
     }
-
-private:
-    float m_x = 0;
-    float m_y = 0;
 };
 
 class Movement
 {
 public:
     void update(Entity e, float dt) {
-        auto& transform = e.get<Transform>();
+        e.mutate<Transform>([&](auto& transform) {
+            transform.x += 50 * dt;
+            transform.y += 50 * dt;
 
-        transform.x(transform.x() + 50 * dt);
-        transform.y(transform.y() + 50 * dt);
-
-        std::cout << transform.to_str() << std::endl;
+            std::cout << transform.to_str() << std::endl;
+        });
     }
 };
 
+/*
+REF: https://skypjack.github.io/entt/md_docs_2md_2entity.html
+Ideas:
+- Since mutate<T>() can send events to anything that uses on_update, components could listen to changes?
+- Enemy mutates player health (take dmg) -> Player component could listen, has health changed? -> play hurt sound
+- Will make it easier for e.g. rendering and only update the sprite position in data structure when transform changes
+*/
+
 int main() {
     sf::RenderWindow window(sf::VideoMode({ 200, 200 }), "Test");
+
+    Scene scene;
+    auto e = scene.create_entity();
+    e.add<Transform>();
+    e.add<Movement>();
+
+    scene.start();
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
@@ -45,18 +53,9 @@ int main() {
             }
         }
 
+        scene.update(0.016f);
+
         window.clear();
         window.display();
     }
-
-    // Scene scene;
-    // auto e = scene.create_entity();
-    // e.add<Transform>();
-    // e.add<Movement>();
-    
-    // scene.start();
-
-    // while (true) {
-    //     scene.update(0.016f);
-    // }
 }

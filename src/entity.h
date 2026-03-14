@@ -13,10 +13,13 @@ public:
     void add(Args&&... args);
 
     template<typename T>
-    T& get();
+    const T& get();
 
     template<typename T>
-    T* try_get();
+    const T* try_get();
+
+    template<typename T, typename Fn>
+    void mutate(Fn&& fn);
 
     template<typename T>
     bool has();
