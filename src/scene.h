@@ -29,7 +29,6 @@ public:
         }
     }
 
-
 private:
     template<typename T>
     void register_start_system() {
