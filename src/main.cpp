@@ -5,29 +5,15 @@
 #include "scene.h"
 #include "spatial_index.h"
 
-class Transform
-{
-public:
-    float x = 0;
-    float y = 0;
-
-    std::string to_str() const
-    {
-        return std::format("[x:{}, y:{}]", x, y);
-    }
-};
-
 class Movement
 {
 public:
     void update(Entity e, float dt)
     {
-        e.mutate<Transform>([&](auto &transform)
-                            {
-            transform.x += 50 * dt;
-            transform.y += 50 * dt;
-
-            std::cout << transform.to_str() << std::endl; });
+        e.mutate<Transform>([&](auto &transform) {
+            transform.x += 64 * dt;
+            transform.y += 64 * dt;
+        });
     }
 };
 
@@ -41,14 +27,26 @@ Ideas:
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({200, 200}), "Test");
+    sf::RenderWindow window(sf::VideoMode({512, 512}), "Test");
+
+    sf::Texture texture;
+    bool _ = texture.loadFromFile("/var/home/finley/Documents/ProgrammingProjects/Test/charlieTheCapybaraAnimationSheet.png");
+
+    sf::Sprite sprite(texture, { { 0, 64 }, { 64, 64 } });
 
     Scene scene;
     auto e = scene.create_entity();
     e.add<Transform>();
     e.add<Movement>();
+    e.add<SpriteRenderer>(sprite);
+
+    auto c = scene.create_entity();
+    c.add<Transform>();
+    c.add<Camera>();
 
     scene.start();
+
+    sf::Clock clock;
 
     while (window.isOpen())
     {
@@ -60,9 +58,10 @@ int main()
             }
         }
 
-        scene.update(0.016f);
+        scene.update(clock.restart().asSeconds());
 
         window.clear();
+        scene.render(window);
         window.display();
     }
 }

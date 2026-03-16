@@ -39,7 +39,7 @@ const T& Entity::get() {
 template<typename T>
 const T* Entity::try_get() {
     if (!has<T>()) return nullptr;
-
+    
     return &m_scene->m_registry.template get<T>(m_handle);
 }
 
