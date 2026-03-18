@@ -1,6 +1,6 @@
 [submodule "vendor/entt"]
 	path = vendor/entt
 	url = https://github.com/skypjack/entt.git
-[submodule "vendor/SFML"]
-	path = vendor/SFML
-	url = https://github.com/SFML/SFML.git
+[submodule "vendor/raylib"]
+	path = vendor/raylib
+	url = https://github.com/raysan5/raylib.git
