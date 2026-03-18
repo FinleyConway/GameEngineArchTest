@@ -7,13 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(vendor/entt)
-add_subdirectory(vendor/SFML)
+add_subdirectory(vendor/raylib)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
 )
 
-target_link_libraries(test PRIVATE 
+target_link_libraries(${PROJECT_NAME} PRIVATE 
     EnTT::EnTT
-    SFML::Graphics
+    raylib
 )

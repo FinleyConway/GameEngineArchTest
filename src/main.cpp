@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <SFML/Graphics.hpp>
+#include <raylib.h>
 
 #include "scene.h"
 #include "spatial_index.h"
@@ -8,11 +8,17 @@
 class Movement
 {
 public:
-    void update(Entity e, float dt)
-    {
-        e.mutate<Transform>([&](auto &transform) {
-            transform.x += 64 * dt;
-            transform.y += 64 * dt;
+    void update(test::Entity e, float dt) {
+        Vector2 direction = {0,0};
+
+        if (IsKeyDown(KEY_W)) direction.y = -1;
+        if (IsKeyDown(KEY_S)) direction.y = +1;
+        if (IsKeyDown(KEY_A)) direction.x = -1;
+        if (IsKeyDown(KEY_D)) direction.x = +1;
+
+        e.mutate<test::Transform>([&](auto& transform) {
+            transform.x += direction.x * 64 * dt;
+            transform.y += direction.y * 64 * dt;
         });
     }
 };
@@ -27,41 +33,43 @@ Ideas:
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({512, 512}), "Test");
+    InitWindow(500, 500, "window");
+    SetTargetFPS(60);
 
-    sf::Texture texture;
-    bool _ = texture.loadFromFile("/var/home/finley/Documents/ProgrammingProjects/Test/charlieTheCapybaraAnimationSheet.png");
+    Image red_img = GenImageColor(64, 64, RED);  // create 64x64 image filled with red
+    Texture2D red_texture = LoadTextureFromImage(red_img);
+    UnloadImage(red_img);
 
-    sf::Sprite sprite(texture, { { 0, 64 }, { 64, 64 } });
+    Image img = GenImageColor(64, 64, WHITE);  // create 64x64 image filled with red
+    Texture2D white_texture = LoadTextureFromImage(img);
+    UnloadImage(img);
 
-    Scene scene;
+    test::Sprite red_sprite(&red_texture, { 0, 64, 64, 64 });
+    test::Sprite white_sprite(&white_texture, { 0, 64, 64, 64 });
+
+    test::Scene scene;
     auto e = scene.create_entity();
-    e.add<Transform>();
+    e.add<test::Transform>();
     e.add<Movement>();
-    e.add<SpriteRenderer>(sprite);
+    e.add<test::SpriteRenderer>(red_sprite);
+    e.add<test::Camera>();
 
     auto c = scene.create_entity();
-    c.add<Transform>();
-    c.add<Camera>();
+    c.add<test::Transform>(0, 64);
+    c.add<test::SpriteRenderer>(white_sprite);
 
     scene.start();
 
-    sf::Clock clock;
+    while (!WindowShouldClose()) {
+        scene.update(GetFrameTime());
 
-    while (window.isOpen())
-    {
-        while (const std::optional event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-            {
-                window.close();
-            }
-        }
-
-        scene.update(clock.restart().asSeconds());
-
-        window.clear();
-        scene.render(window);
-        window.display();
+        BeginDrawing();
+        ClearBackground(BLACK);
+        scene.render();
+        EndDrawing();
     }
+
+    UnloadTexture(red_texture);
+    UnloadTexture(white_texture);
+    CloseWindow();
 }

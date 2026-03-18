@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <entt/entt.hpp>
 
 #include "camera.h"
@@ -9,71 +8,87 @@
 
 #include "spatial_index.h"
 
-class Render 
-{
-public:
-    Render(entt::registry& registry) : m_spatial_index(32.0f) {
-        registry.on_update<Transform>().connect<&Render::on_transform_change>(this);
-        registry.on_construct<SpriteRenderer>().connect<&Render::on_sprite_renderer_add>(this);
-    }
+namespace test {
+    class Render 
+    {
+    public:
+        Render(entt::registry& registry) : m_spatial_index(32.0f) {
+            registry.on_update<Transform>().connect<&Render::on_transform_change>(this);
+            registry.on_construct<SpriteRenderer>().connect<&Render::on_sprite_renderer_add>(this);
+        }
 
-    void render_entities(entt::registry& registery, sf::RenderTarget& target) {
-        auto view = registery.view<Transform, Camera>();
+        void render_entities(entt::registry& registery) {
+            auto view = registery.view<Transform, Camera>();
 
-        view.each([&](entt::entity entity, Transform& transform, Camera& camera) {
-            render_entity_in_camera(registery,transform, camera, target);
-        });
-    }
-
-private:
-    void render_entity_in_camera(entt::registry& registery, const Transform& transform, const Camera& camera, sf::RenderTarget& target) {
-        AABB bounds = {
-            .x = transform.x,
-            .y = transform.y,
-            .w = static_cast<float>(target.getSize().x),
-            .h = static_cast<float>(target.getSize().y),
-        };
-
-        m_spatial_index.query(bounds, [&](entt::entity entity) {
-            if (auto* sprite_renderer = registery.try_get<SpriteRenderer>(entity)) {
-                target.draw(sprite_renderer->get_sprite());
-            }
-        });
-    }
-
-    void on_sprite_renderer_add(entt::registry& registery, entt::entity entity) {
-        auto& transform = registery.get<Transform>(entity);
-        auto& sprite_renderer = registery.get<SpriteRenderer>(entity);
-
-        sf::FloatRect bounds = sprite_renderer.get_sprite().getGlobalBounds();
-
-        m_spatial_index.insert(entity, {
-            .x = bounds.position.x,
-            .y = bounds.position.y,
-            .w = transform.x + bounds.size.x,
-            .h = transform.y + bounds.size.y,
-        });
-    }
-
-    // i should batch these to happen at once rather then on change since transform will change alot before drawing phase
-    void on_transform_change(entt::registry& registery, entt::entity entity) { 
-        if (auto* sprite_renderer = registery.try_get<SpriteRenderer>(entity)) {
-            auto& transform = registery.get<Transform>(entity);
-
-            sprite_renderer->get_sprite().setPosition({ transform.x, transform.y });
-
-            sf::FloatRect bounds = sprite_renderer->get_sprite().getGlobalBounds();
-
-            m_spatial_index.remove(entity);
-            m_spatial_index.insert(entity, {
-                .x = bounds.position.x,
-                .y = bounds.position.y,
-                .w = transform.x + bounds.size.x,
-                .h = transform.y + bounds.size.y,
+            view.each([&](entt::entity entity, Transform& transform, Camera& camera) {
+                render_entity_in_camera(registery,transform, camera);
             });
         }
-    }
 
-private:
-    SpatialIndex m_spatial_index;
-};
+    private:
+        void render_entity_in_camera(entt::registry& registery, const Transform& transform, const Camera& camera) {
+            float screen_width = GetScreenWidth();
+            float screen_height = GetScreenHeight(); // maybe temp
+
+            float world_width  = screen_width  / camera.get_zoom();
+            float world_height = screen_height / camera.get_zoom();
+
+            Camera2D rlCamera;
+            rlCamera.target = transform.get_position();              
+            rlCamera.offset = { screen_width / 2.0f, screen_height / 2.0f }; 
+            rlCamera.rotation = 0.0f; // no rotation support
+            rlCamera.zoom = camera.get_zoom();
+
+            AABB bounds = {
+                .x = rlCamera.target.x - world_width  / 2.0f,
+                .y = rlCamera.target.y - world_height / 2.0f,
+                .w = world_width,
+                .h = world_height
+            };
+
+            m_spatial_index.query(bounds, [&](entt::entity entity) {
+                auto& sprite_transform = registery.get<Transform>(entity);
+
+                if (auto* sprite_renderer = registery.try_get<SpriteRenderer>(entity)) { // perhaps add a intersect check
+                    BeginMode2D(rlCamera);
+                    sprite_renderer->get_sprite().draw(sprite_transform.get_position(), WHITE);
+                    EndMode2D();
+                }
+            });
+        }
+
+        void on_sprite_renderer_add(entt::registry& registery, entt::entity entity) {
+            auto& transform = registery.get<Transform>(entity);
+            auto& sprite_renderer = registery.get<SpriteRenderer>(entity);
+
+            Rectangle bounds = sprite_renderer.get_sprite().get_bounds(transform.get_position());
+
+            m_spatial_index.insert(entity, {
+                .x = bounds.x,
+                .y = bounds.y,
+                .w = bounds.width,
+                .h = bounds.height,
+            });
+        }
+
+        // i should batch these to happen at once rather then on change since transform will change alot before drawing phase
+        void on_transform_change(entt::registry& registery, entt::entity entity) { 
+            if (auto* sprite_renderer = registery.try_get<SpriteRenderer>(entity)) {
+                auto& transform = registery.get<Transform>(entity);
+
+                Rectangle bounds = sprite_renderer->get_sprite().get_bounds(transform.get_position());
+
+                m_spatial_index.remove(entity);
+                m_spatial_index.insert(entity, {
+                    .x = bounds.x,
+                    .y = bounds.y,
+                    .w = bounds.width,
+                    .h = bounds.height,
+                });
+            }
+        }
+
+    private:
+        SpatialIndex m_spatial_index;
+    };
+}

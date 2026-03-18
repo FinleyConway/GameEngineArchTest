@@ -2,41 +2,43 @@
 
 #include <entt/entt.hpp>
 
-class Scene;
+namespace test {
+    class Scene;
 
-class Entity
-{
-public:
-    Entity() = default;
+    class Entity
+    {
+    public:
+        Entity() = default;
 
-    template<typename T, typename... Args>
-    void add(Args&&... args);
+        template<typename T, typename... Args>
+        void add(Args&&... args);
 
-    template<typename T>
-    const T& get();
+        template<typename T>
+        const T& get();
 
-    template<typename T>
-    const T* try_get();
+        template<typename T>
+        const T* try_get();
 
-    template<typename T, typename Fn>
-    void mutate(Fn&& fn);
+        template<typename T, typename Fn>
+        void mutate(Fn&& fn);
 
-    template<typename T>
-    bool has();
+        template<typename T>
+        bool has();
 
-    template<typename T>
-    void remove();
+        template<typename T>
+        void remove();
 
-    void kill();
+        void kill();
 
-    bool valid() const;
+        bool valid() const;
 
-private:
-    friend class Scene;
+    private:
+        friend class Scene;
 
-    Entity(entt::entity handle, Scene* scene);
+        Entity(entt::entity handle, Scene* scene);
 
-private:
-    entt::entity m_handle = entt::null;
-    Scene* m_scene = nullptr;
-};
+    private:
+        entt::entity m_handle = entt::null;
+        Scene* m_scene = nullptr;
+    };
+}

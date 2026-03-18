@@ -5,87 +5,89 @@
 #include "entity.h"
 #include "render.h"
 
-class Scene
-{
-public: 
-    explicit Scene() : m_render(m_registry) { }
+namespace test {
+    class Scene
+    {
+    public: 
+        explicit Scene() : m_render(m_registry) { }
 
-    Entity create_entity() {
-        entt::entity entity = m_registry.create();
+        Entity create_entity() {
+            entt::entity entity = m_registry.create();
 
-        return Entity(entity, this);
-    }
-
-    void remove_entity(Entity entity) {
-        entity.kill();
-    }
-
-    void start() {
-        for (auto& system : m_start_systems) {
-            system(*this);
+            return Entity(entity, this);
         }
-    }
 
-    void update(float dt) {
-        for (auto& system : m_update_systems) {
-            system(*this, dt);
+        void remove_entity(Entity entity) {
+            entity.kill();
         }
-    }
 
-    void render(sf::RenderTarget& target) {
-        m_render.render_entities(m_registry, target);
-    }
-
-private:
-    template<typename T>
-    void register_start_system() {
-        m_start_systems.emplace_back([](Scene& scene) {
-            auto view = scene.m_registry.view<T>();
-
-            if constexpr (std::is_empty_v<T>) { // EnTT optimizes empty components
-                for (auto entity : view) {
-                    T comp{};
-                    comp.start(Entity(entity, &scene));
-                }
-            } 
-            else {
-                for (auto entity : view) {
-                    auto& comp = view.template get<T>(entity);
-                    comp.start(Entity(entity, &scene));
-                }
+        void start() {
+            for (auto& system : m_start_systems) {
+                system(*this);
             }
-        });
-    }
+        }
 
-    template<typename T>
-    void register_update_system() {
-        m_update_systems.emplace_back([](Scene& scene, float dt) {
-            auto view = scene.m_registry.view<T>();
-
-            if constexpr (std::is_empty_v<T>) { // EnTT optimizes empty components
-                for (auto entity : view) {
-                    T comp{};
-                    comp.update(Entity(entity, &scene), dt);
-                }
-            } 
-            else {
-                for (auto entity : view) {
-                    auto& comp = view.template get<T>(entity);
-                    comp.update(Entity(entity, &scene), dt);
-                }
+        void update(float dt) {
+            for (auto& system : m_update_systems) {
+                system(*this, dt);
             }
-        });
-    }
+        }
 
-private:
-    friend class Entity;
+        void render() {
+            m_render.render_entities(m_registry);
+        }
 
-private:
-    entt::registry m_registry;
-    std::vector<std::function<void(Scene&)>> m_start_systems;
-    std::vector<std::function<void(Scene&, float)>> m_update_systems;
+    private:
+        template<typename T>
+        void register_start_system() {
+            m_start_systems.emplace_back([](Scene& scene) {
+                auto view = scene.m_registry.view<T>();
 
-    Render m_render;
-};
+                if constexpr (std::is_empty_v<T>) { // EnTT optimizes empty components
+                    for (auto entity : view) {
+                        T comp{};
+                        comp.start(Entity(entity, &scene));
+                    }
+                } 
+                else {
+                    for (auto entity : view) {
+                        auto& comp = view.template get<T>(entity);
+                        comp.start(Entity(entity, &scene));
+                    }
+                }
+            });
+        }
+
+        template<typename T>
+        void register_update_system() {
+            m_update_systems.emplace_back([](Scene& scene, float dt) {
+                auto view = scene.m_registry.view<T>();
+
+                if constexpr (std::is_empty_v<T>) { // EnTT optimizes empty components
+                    for (auto entity : view) {
+                        T comp{};
+                        comp.update(Entity(entity, &scene), dt);
+                    }
+                } 
+                else {
+                    for (auto entity : view) {
+                        auto& comp = view.template get<T>(entity);
+                        comp.update(Entity(entity, &scene), dt);
+                    }
+                }
+            });
+        }
+
+    private:
+        friend class Entity;
+
+    private:
+        entt::registry m_registry;
+        std::vector<std::function<void(Scene&)>> m_start_systems;
+        std::vector<std::function<void(Scene&, float)>> m_update_systems;
+
+        Render m_render;
+    };
+}
 
 #include "entity.inl"

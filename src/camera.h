@@ -1,17 +1,16 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <raylib.h>
 
-class Camera 
-{
-public:
-    Camera() = default;
-    Camera(const sf::View& view) : m_view(view) {}
+namespace test {
+    class Camera 
+    {
+    public:
+        float get_zoom() const {
+            return m_zoom;
+        }
 
-    sf::View& get_view() {
-        return m_view;
-    }
-
-private:
-    sf::View m_view;
-};
+    private:
+        float m_zoom = 1;
+    };
+}

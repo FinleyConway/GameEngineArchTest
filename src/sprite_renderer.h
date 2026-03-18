@@ -1,17 +1,20 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include "sprite.h"
 
-class SpriteRenderer 
-{
-public:
-    SpriteRenderer() = default;
-    SpriteRenderer(const sf::Sprite& sprite) : m_sprite(sprite) { }
+namespace test {
+    class SpriteRenderer 
+    {
+    public:
+        SpriteRenderer() = default;
 
-    sf::Sprite& get_sprite() {
-        return m_sprite;
-    }
+        SpriteRenderer(const Sprite& sprite) : m_sprite(sprite) { }
 
-private:
-    sf::Sprite m_sprite;
-};
+        const Sprite& get_sprite() {
+            return m_sprite;
+        }
+
+    private:
+        Sprite m_sprite;
+    };
+}
