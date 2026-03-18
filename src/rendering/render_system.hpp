@@ -10,6 +10,11 @@
 
 namespace test
 {
+    struct CameraView {
+        Camera2D rl_camera;
+        AABB bounds;
+    };
+
     class RenderSystem 
     {
     public:
@@ -31,28 +36,11 @@ namespace test
     private:
         void render_camera(entt::registry& registry, const Transform& transform, const Camera& camera)
         {
-            float screen_w = GetScreenWidth();
-            float screen_h = GetScreenHeight();
+            CameraView view = compute_camera_view(transform, camera);
 
-            float world_w = screen_w / camera.get_zoom();
-            float world_h = screen_h / camera.get_zoom();
+            BeginMode2D(view.rl_camera);
 
-            Camera2D rlCamera;
-            rlCamera.target = transform.get_position();
-            rlCamera.offset = { screen_w / 2.0f, screen_h / 2.0f };
-            rlCamera.rotation = 0.0f;
-            rlCamera.zoom = camera.get_zoom();
-
-            AABB bounds = {
-                rlCamera.target.x - world_w / 2.0f,
-                rlCamera.target.y - world_h / 2.0f,
-                world_w,
-                world_h
-            };
-
-            BeginMode2D(rlCamera);
-
-            m_spatial.query(bounds, [&](entt::entity entity) {
+            m_spatial.query(view.bounds, [&](entt::entity entity) {
                 const auto& t = registry.get<Transform>(entity);
 
                 if (auto* sr = registry.try_get<SpriteRenderer>(entity)) {
@@ -63,6 +51,33 @@ namespace test
             });
 
             EndMode2D();
+        }
+
+        CameraView compute_camera_view(const Transform& transform, const Camera& camera) {
+            float screen_w = GetScreenWidth();
+            float screen_h = GetScreenHeight();
+
+            float world_w = screen_w / camera.get_zoom();
+            float world_h = screen_h / camera.get_zoom();
+
+            Camera2D rl_camera {
+                .offset = { 
+                    .x = screen_w / 2.0f, 
+                    .y = screen_h / 2.0f 
+                },
+                .target = transform.get_position(),
+                .rotation = 0.0f, // no rotation support
+                .zoom = camera.get_zoom()
+            };
+
+            AABB bounds {
+                .x = rl_camera.target.x - world_w / 2.0f,
+                .y = rl_camera.target.y - world_h / 2.0f,
+                .w = world_w,
+                .h = world_h
+            };
+
+            return CameraView(rl_camera, bounds);
         }
 
         void draw_no_camera() {

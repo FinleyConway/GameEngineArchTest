@@ -20,17 +20,16 @@ namespace test
 
     private:
         void draw(Vector2 position) const override {
-            const Texture2D* texture = m_sprite.get_texture();
+            if (!m_sprite.get_texture().is_valid()) return; // maybe add a log here
+
+            const Texture2D& handle = m_sprite.get_texture().get_handle();
             Vector2 pivot = m_sprite.get_pivot();
-
-            if (texture == nullptr) return;
-
             Vector2 draw_position = {
                 .x = position.x - pivot.x,
                 .y = position.y - pivot.y
             };
 
-            DrawTextureRec(*texture, m_sprite.get_texture_rect(), draw_position, m_colour);
+            DrawTextureRec(handle, m_sprite.get_texture_rect(), draw_position, m_colour);
         }
 
     private:

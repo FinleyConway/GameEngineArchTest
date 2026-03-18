@@ -8,6 +8,8 @@
 #include "scene/components/sprite_renderer.hpp"
 #include "scene/components/camera.hpp"
 
+#include "rendering/texture.hpp"
+
 class Movement : public test::Updatable
 {
 private:
@@ -45,16 +47,11 @@ int main()
     InitWindow(500, 500, "window");
     SetTargetFPS(60);
 
-    Image red_img = GenImageColor(64, 64, RED); 
-    Texture2D red_texture = LoadTextureFromImage(red_img);
-    UnloadImage(red_img);
+    test::Texture red_square = test::Texture::create_rectangle(64, 64, RED);
+    test::Texture white_circle = test::Texture::create_rectangle(64, 64, WHITE);
 
-    Image img = GenImageColor(64, 64, WHITE); 
-    Texture2D white_texture = LoadTextureFromImage(img);
-    UnloadImage(img);
-
-    test::Sprite red_sprite(&red_texture, { 0, 64, 64, 64 });
-    test::Sprite white_sprite(&white_texture, { 0, 64, 64, 64 });
+    test::Sprite red_sprite(red_square, { 0, 0, 64, 64 });
+    test::Sprite white_sprite(white_circle, { 0, 0, 64, 64 });
 
     test::Scene scene;
     auto e = scene.create_entity();
@@ -78,7 +75,5 @@ int main()
         EndDrawing();
     }
 
-    UnloadTexture(red_texture);
-    UnloadTexture(white_texture);
     CloseWindow();
 }

@@ -2,6 +2,8 @@
 
 #include <raylib.h>
 
+#include "rendering/texture.hpp"
+
 namespace test 
 {
     class Sprite
@@ -9,13 +11,13 @@ namespace test
     public:
         explicit Sprite() = default;
 
-        Sprite(const Texture2D* texture, const Rectangle& texture_rect) 
+        Sprite(const Texture& texture, const Rectangle& texture_rect) 
             : m_texture_rect(texture_rect), m_pivot(generate_pivot(texture_rect)), m_texture(texture) { }
 
-        Sprite(const Texture2D* texture, const Rectangle& texture_rect, Vector2 pivot) 
+        Sprite(const Texture& texture, const Rectangle& texture_rect, Vector2 pivot) 
             : m_texture_rect(texture_rect), m_pivot(pivot), m_texture(texture) { }
 
-        const Texture2D* get_texture() const {
+        const Texture& get_texture() const {
             return m_texture;
         }
 
@@ -47,6 +49,6 @@ namespace test
     private:
         Rectangle m_texture_rect;
         Vector2 m_pivot;
-        const Texture2D* m_texture = nullptr;
+        Texture m_texture;
     };
 }
