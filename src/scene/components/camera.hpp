@@ -1,8 +1,7 @@
 #pragma once
 
-#include <raylib.h>
-
-namespace test {
+namespace test 
+{
     class Camera 
     {
     public:

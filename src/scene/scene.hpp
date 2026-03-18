@@ -7,14 +7,16 @@
 
 #include <entt/entt.hpp>
 
-#include "entity.h"
-#include "render.h"
+#include "scene/entity.hpp"
+#include "rendering/render_system.hpp"
+#include "spatial/spatial_system.hpp"
 
-namespace test {
+namespace test 
+{
     class Scene
     {
     public: 
-        explicit Scene() : m_render(m_registry) { }
+        explicit Scene() : m_spatial_system(m_registry), m_render_system(m_spatial_system) { }
 
         Entity create_entity() {
             entt::entity entity = m_registry.create();
@@ -39,7 +41,7 @@ namespace test {
         }
 
         void render() {
-            m_render.render_entities(m_registry);
+            m_render_system.render(m_registry);
         }
 
     private:
@@ -77,10 +79,6 @@ namespace test {
             });
         }
 
-        void add_renderer_components(entt::entity entity) {
-            m_render.on_renderer_add(m_registry, entity);
-        }
-
     private:
         friend class Entity;
 
@@ -92,8 +90,9 @@ namespace test {
         std::vector<std::function<void(Scene&, float)>> m_update_systems;
         std::unordered_set<std::type_index> m_registered_update_systems;
 
-        Render m_render;
+        SpatialSystem m_spatial_system;
+        RenderSystem m_render_system;
     };
 }
 
-#include "entity.inl"
+#include "scene/entity.inl"

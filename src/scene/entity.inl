@@ -3,10 +3,12 @@
 #include <cassert>
 #include <concepts>
 
-#include "scene.h"
-#include "component_interfaces.h"
+#include "scene/scene.hpp"
+#include "scene/interfaces/initialisable.hpp"
+#include "scene/interfaces/updatable.hpp"
 
-namespace test {
+namespace test 
+{
     template<typename T, typename... Args>
     void Entity::add(Args&&... args) {
         // make sure tat the entity is alive
@@ -21,16 +23,12 @@ namespace test {
             // add component and apply it to the update group
             m_scene->m_registry.template emplace<T>(m_handle, std::forward<Args>(args)...);
 
-            if constexpr (std::derived_from<T, IInitialisable>) {
-                m_scene->template register_start_system<T, IInitialisable>();
+            if constexpr (std::derived_from<T, Initialisable>) {
+                m_scene->template register_start_system<T, Initialisable>();
             }
 
-            if constexpr (std::derived_from<T, IUpdatable>) {
-                m_scene->template register_update_system<T, IUpdatable>();
-            }
-
-            if constexpr (std::derived_from<T, IRenderable>) {
-                m_scene->add_renderer_components(m_handle);
+            if constexpr (std::derived_from<T, Updatable>) {
+                m_scene->template register_update_system<T, Updatable>();
             }
         }
     }

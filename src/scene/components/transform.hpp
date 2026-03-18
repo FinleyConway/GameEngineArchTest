@@ -4,7 +4,8 @@
 
 #include <raylib.h>
 
-namespace test {
+namespace test 
+{
     class Transform
     {
     public:

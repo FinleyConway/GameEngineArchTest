@@ -2,7 +2,8 @@
 
 #include <entt/entt.hpp>
 
-namespace test {
+namespace test
+{
     class Scene;
 
     class Entity

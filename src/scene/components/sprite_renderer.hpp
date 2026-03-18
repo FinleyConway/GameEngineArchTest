@@ -1,10 +1,13 @@
 #pragma once
 
-#include "component_interfaces.h"
-#include "sprite.h"
+#include <raylib.h>
 
-namespace test {
-    class SpriteRenderer : public IRenderable
+#include "scene/interfaces/renderable.hpp"
+#include "rendering/sprite.hpp"
+
+namespace test 
+{
+    class SpriteRenderer : public Renderable
     {
     public:
         SpriteRenderer() = default;

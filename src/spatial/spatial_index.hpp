@@ -6,7 +6,8 @@
 
 #include <entt/entt.hpp>
 
-namespace test {
+namespace test 
+{
     struct FixedBounds
     {
         int32_t min_x = 0;

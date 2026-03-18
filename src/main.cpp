@@ -2,11 +2,13 @@
 
 #include <raylib.h>
 
-#include "scene.h"
-#include "component_interfaces.h"
-#include "spatial_index.h"
+#include "scene/scene.hpp"
+#include "scene/interfaces/updatable.hpp"
+#include "scene/components/transform.hpp"
+#include "scene/components/sprite_renderer.hpp"
+#include "scene/components/camera.hpp"
 
-class Movement : public test::IUpdatable
+class Movement : public test::Updatable
 {
 private:
     void update(test::Entity e, float dt) override {
