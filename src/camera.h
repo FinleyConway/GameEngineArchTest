@@ -10,6 +10,12 @@ namespace test {
             return m_zoom;
         }
 
+        void set_zoom(float zoom) {
+            if (zoom <= 0.0f) return;
+
+            m_zoom = zoom;
+        }
+
     private:
         float m_zoom = 1;
     };

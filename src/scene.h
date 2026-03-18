@@ -1,5 +1,10 @@
 #pragma once
 
+#include <vector>
+#include <typeindex>
+#include <functional>
+#include <unordered_set>
+
 #include <entt/entt.hpp>
 
 #include "entity.h"
@@ -38,44 +43,42 @@ namespace test {
         }
 
     private:
-        template<typename T>
+        template<typename T, typename TInterface>
         void register_start_system() {
+            auto type = std::type_index(typeid(T));
+            if (m_registered_start_systems.contains(type)) return;
+
+            m_registered_start_systems.insert(type);
+
             m_start_systems.emplace_back([](Scene& scene) {
                 auto view = scene.m_registry.view<T>();
 
-                if constexpr (std::is_empty_v<T>) { // EnTT optimizes empty components
-                    for (auto entity : view) {
-                        T comp{};
-                        comp.start(Entity(entity, &scene));
-                    }
-                } 
-                else {
-                    for (auto entity : view) {
-                        auto& comp = view.template get<T>(entity);
-                        comp.start(Entity(entity, &scene));
-                    }
+                for (auto entity : view) {
+                    auto& comp = view.template get<T>(entity); 
+                    static_cast<TInterface&>(comp).start(Entity(entity, &scene));
                 }
             });
         }
 
-        template<typename T>
+        template<typename T, typename TInterface>
         void register_update_system() {
+            auto type = std::type_index(typeid(T));
+            if (m_registered_update_systems.contains(type)) return;
+
+            m_registered_update_systems.insert(type);
+
             m_update_systems.emplace_back([](Scene& scene, float dt) {
                 auto view = scene.m_registry.view<T>();
 
-                if constexpr (std::is_empty_v<T>) { // EnTT optimizes empty components
-                    for (auto entity : view) {
-                        T comp{};
-                        comp.update(Entity(entity, &scene), dt);
-                    }
-                } 
-                else {
-                    for (auto entity : view) {
-                        auto& comp = view.template get<T>(entity);
-                        comp.update(Entity(entity, &scene), dt);
-                    }
+                for (auto entity : view) {
+                    auto& comp = view.template get<T>(entity); 
+                    static_cast<TInterface&>(comp).update(Entity(entity, &scene), dt);
                 }
             });
+        }
+
+        void add_renderer_components(entt::entity entity) {
+            m_render.on_renderer_add(m_registry, entity);
         }
 
     private:
@@ -84,7 +87,10 @@ namespace test {
     private:
         entt::registry m_registry;
         std::vector<std::function<void(Scene&)>> m_start_systems;
+        std::unordered_set<std::type_index> m_registered_start_systems;
+
         std::vector<std::function<void(Scene&, float)>> m_update_systems;
+        std::unordered_set<std::type_index> m_registered_update_systems;
 
         Render m_render;
     };

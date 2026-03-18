@@ -1,6 +1,6 @@
 #pragma once
 
-#include "raylib.h"
+#include <raylib.h>
 
 namespace test {
     class Sprite
@@ -14,6 +14,18 @@ namespace test {
         Sprite(const Texture2D* texture, const Rectangle& texture_rect, Vector2 pivot) 
             : m_texture_rect(texture_rect), m_pivot(pivot), m_texture(texture) { }
 
+        const Texture2D* get_texture() const {
+            return m_texture;
+        }
+
+        Vector2 get_pivot() const {
+            return m_pivot;
+        }
+
+        Rectangle get_texture_rect() const {
+            return m_texture_rect;
+        }
+
         Rectangle get_bounds(Vector2 position) const {
             return {
                 .x = position.x - m_pivot.x,
@@ -21,17 +33,6 @@ namespace test {
                 .width  = m_texture_rect.width,
                 .height = m_texture_rect.height
             };
-        }
-
-        void draw(Vector2 position, Color colour) const {
-            if (m_texture == nullptr) return;
-
-            Vector2 draw_position = {
-                .x = position.x - m_pivot.x,
-                .y = position.y - m_pivot.y
-            };
-
-            DrawTextureRec(*m_texture, m_texture_rect, draw_position, colour);
         }
 
     private:

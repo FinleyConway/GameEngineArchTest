@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <concepts>
 
 #include "scene.h"
 #include "component_interfaces.h"
@@ -20,12 +21,16 @@ namespace test {
             // add component and apply it to the update group
             m_scene->m_registry.template emplace<T>(m_handle, std::forward<Args>(args)...);
 
-            if constexpr (Initialisable<T>) {
-                m_scene->template register_start_system<T>();
+            if constexpr (std::derived_from<T, IInitialisable>) {
+                m_scene->template register_start_system<T, IInitialisable>();
             }
 
-            if constexpr (Updatable<T>) {
-                m_scene->template register_update_system<T>();
+            if constexpr (std::derived_from<T, IUpdatable>) {
+                m_scene->template register_update_system<T, IUpdatable>();
+            }
+
+            if constexpr (std::derived_from<T, IRenderable>) {
+                m_scene->add_renderer_components(m_handle);
             }
         }
     }

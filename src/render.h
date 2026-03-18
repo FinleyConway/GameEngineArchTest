@@ -14,7 +14,6 @@ namespace test {
     public:
         Render(entt::registry& registry) : m_spatial_index(32.0f) {
             registry.on_update<Transform>().connect<&Render::on_transform_change>(this);
-            registry.on_construct<SpriteRenderer>().connect<&Render::on_sprite_renderer_add>(this);
         }
 
         void render_entities(entt::registry& registery) {
@@ -22,6 +21,20 @@ namespace test {
 
             view.each([&](entt::entity entity, Transform& transform, Camera& camera) {
                 render_entity_in_camera(registery,transform, camera);
+            });
+        }
+
+        void on_renderer_add(entt::registry& registery, entt::entity entity) {
+            const auto& transform = registery.get<Transform>(entity);
+            const auto& sprite_renderer = registery.get<SpriteRenderer>(entity);
+
+            Rectangle bounds = sprite_renderer.get_sprite().get_bounds(transform.get_position());
+
+            m_spatial_index.insert(entity, {
+                .x = bounds.x,
+                .y = bounds.y,
+                .w = bounds.width,
+                .h = bounds.height,
             });
         }
 
@@ -46,35 +59,25 @@ namespace test {
                 .h = world_height
             };
 
-            m_spatial_index.query(bounds, [&](entt::entity entity) {
-                auto& sprite_transform = registery.get<Transform>(entity);
+            BeginMode2D(rlCamera);
 
-                if (auto* sprite_renderer = registery.try_get<SpriteRenderer>(entity)) { // perhaps add a intersect check
-                    BeginMode2D(rlCamera);
-                    sprite_renderer->get_sprite().draw(sprite_transform.get_position(), WHITE);
-                    EndMode2D();
+            m_spatial_index.query(bounds, [&](entt::entity entity) {
+                const auto& sprite_transform = registery.get<Transform>(entity);
+
+                if (const auto* sprite_renderer = registery.try_get<SpriteRenderer>(entity)) { // perhaps add a intersect check
+                    const auto& renderable = static_cast<const IRenderable&>(*sprite_renderer);
+
+                    renderable.draw(sprite_transform.get_position());
                 }
             });
-        }
 
-        void on_sprite_renderer_add(entt::registry& registery, entt::entity entity) {
-            auto& transform = registery.get<Transform>(entity);
-            auto& sprite_renderer = registery.get<SpriteRenderer>(entity);
-
-            Rectangle bounds = sprite_renderer.get_sprite().get_bounds(transform.get_position());
-
-            m_spatial_index.insert(entity, {
-                .x = bounds.x,
-                .y = bounds.y,
-                .w = bounds.width,
-                .h = bounds.height,
-            });
+            EndMode2D();
         }
 
         // i should batch these to happen at once rather then on change since transform will change alot before drawing phase
         void on_transform_change(entt::registry& registery, entt::entity entity) { 
-            if (auto* sprite_renderer = registery.try_get<SpriteRenderer>(entity)) {
-                auto& transform = registery.get<Transform>(entity);
+            if (const auto* sprite_renderer = registery.try_get<SpriteRenderer>(entity)) {
+                const auto& transform = registery.get<Transform>(entity);
 
                 Rectangle bounds = sprite_renderer->get_sprite().get_bounds(transform.get_position());
 

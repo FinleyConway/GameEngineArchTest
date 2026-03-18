@@ -3,18 +3,24 @@
 #include <raylib.h>
 
 #include "scene.h"
+#include "component_interfaces.h"
 #include "spatial_index.h"
 
-class Movement
+class Movement : public test::IUpdatable
 {
-public:
-    void update(test::Entity e, float dt) {
+private:
+    void update(test::Entity e, float dt) override {
         Vector2 direction = {0,0};
 
         if (IsKeyDown(KEY_W)) direction.y = -1;
         if (IsKeyDown(KEY_S)) direction.y = +1;
         if (IsKeyDown(KEY_A)) direction.x = -1;
         if (IsKeyDown(KEY_D)) direction.x = +1;
+
+        e.mutate<test::Camera>([&](auto& camera) {
+            if (IsKeyDown(KEY_UP)) camera.set_zoom(10);
+            if (IsKeyDown(KEY_DOWN)) camera.set_zoom(1);
+        });
 
         e.mutate<test::Transform>([&](auto& transform) {
             transform.x += direction.x * 64 * dt;
@@ -33,14 +39,15 @@ Ideas:
 
 int main()
 {
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(500, 500, "window");
     SetTargetFPS(60);
 
-    Image red_img = GenImageColor(64, 64, RED);  // create 64x64 image filled with red
+    Image red_img = GenImageColor(64, 64, RED); 
     Texture2D red_texture = LoadTextureFromImage(red_img);
     UnloadImage(red_img);
 
-    Image img = GenImageColor(64, 64, WHITE);  // create 64x64 image filled with red
+    Image img = GenImageColor(64, 64, WHITE); 
     Texture2D white_texture = LoadTextureFromImage(img);
     UnloadImage(img);
 

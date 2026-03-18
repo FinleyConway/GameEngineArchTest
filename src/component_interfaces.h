@@ -1,15 +1,40 @@
 #pragma once
 
+#include <raylib.h>
+
 namespace test {
     class Entity;
 
-    template<typename T>
-    concept Initialisable = requires(T t, Entity e) {
-        t.start(e);
+    class IInitialisable 
+    {
+    public:
+        virtual void start(Entity e) = 0;
+
+    protected:
+        friend class Scene;
+
+        virtual ~IInitialisable() = default;
     };
 
-    template<typename T>
-    concept Updatable = requires(T t, Entity e, float dt) {
-        t.update(e, dt);
+    class IUpdatable 
+    {
+    public:
+        virtual ~IUpdatable() = default;
+
+    protected:
+        friend class Scene;
+
+        virtual void update(Entity e, float dt) = 0;
+    };
+
+    class IRenderable
+    {
+    public:
+        virtual ~IRenderable() = default;
+
+    protected:
+        friend class Render;
+
+        virtual void draw(Vector2 position) const = 0;
     };
 }
