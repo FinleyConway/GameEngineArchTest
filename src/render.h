@@ -16,11 +16,15 @@ namespace test {
             registry.on_update<Transform>().connect<&Render::on_transform_change>(this);
         }
 
-        void render_entities(entt::registry& registery) {
-            auto view = registery.view<Transform, Camera>();
+        void render_entities(entt::registry& registry) {
+            auto view = registry.view<Transform, Camera>();
 
-            view.each([&](entt::entity entity, Transform& transform, Camera& camera) {
-                render_entity_in_camera(registery,transform, camera);
+            if (view.begin() == view.end()) {
+                return draw_no_camera_info();
+            }
+
+            view.each([&](auto entity, Transform& transform, Camera& camera) {
+                render_entity_in_camera(registry, transform, camera);
             });
         }
 
@@ -39,6 +43,18 @@ namespace test {
         }
 
     private:
+        void draw_no_camera_info() {
+            const char* text = "No camera in the scene!";
+            int font_size = 20;
+
+            int text_width = MeasureText(text, font_size);
+
+            int x = (GetScreenWidth() - text_width) / 2;
+            int y = (GetScreenHeight() - font_size) / 2;
+
+            DrawText(text, x, y, font_size, RED);
+        }
+
         void render_entity_in_camera(entt::registry& registery, const Transform& transform, const Camera& camera) {
             float screen_width = GetScreenWidth();
             float screen_height = GetScreenHeight(); // maybe temp

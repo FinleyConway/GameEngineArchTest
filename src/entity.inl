@@ -51,6 +51,11 @@ namespace test {
 
     template<typename T, typename Fn>
     void Entity::mutate(Fn&& fn) {
+        if (!has<T>()) {
+            // add log
+            return;
+        }
+
         m_scene->m_registry.patch<T>(m_handle, std::forward<Fn>(fn));
     }
 
