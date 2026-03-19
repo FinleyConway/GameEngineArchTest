@@ -27,4 +27,18 @@ namespace test
     Vector2<T> Rect<T>::get_size() const {
         return Vector2<T>(w, h);
     }
+
+    template<typename T>
+    bool Rect<T>::contains(T px, T py) const {
+        return px >= x && px < x + w && py >= y && py < y + h;
+    }
+
+    template<typename T>
+    bool Rect<T>::intersects(const Rect<T>& other) const
+    {
+        return !(
+            x + w <= other.x || other.x + other.w <= x ||
+            y + h <= other.y || other.y + other.h <= y
+        );
+    }
 }

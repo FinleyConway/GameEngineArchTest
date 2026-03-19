@@ -37,20 +37,16 @@ namespace test
         }
 
     private:
-        void render_camera(entt::registry& registry, const Transform& transform, const Camera& camera)
+        void render_camera(entt::registry& registry, const Transform& camera_transform, const Camera& camera)
         {
-            CameraView view = compute_camera_view(transform, camera);
+            CameraView view = compute_camera_view(camera_transform, camera);
 
             BeginMode2D(view.rl_camera);
 
             m_spatial.query(view.bounds, [&](entt::entity entity) {
-                const auto& t = registry.get<Transform>(entity);
+                const auto& sprite_transform = registry.get<Transform>(entity);
 
-                if (auto* sr = registry.try_get<SpriteRenderer>(entity)) {
-                    const auto& renderable = static_cast<const Renderable&>(*sr);
-
-                    renderable.draw(t.get_position());
-                }
+                render_sprite(registry, entity, sprite_transform, view.bounds);
             });
 
             EndMode2D();
@@ -81,6 +77,17 @@ namespace test
             );
 
             return CameraView(rl_camera, bounds);
+        }
+
+        void render_sprite(entt::registry& registry, entt::entity entity, const Transform& transform, const FloatRect& view_bounds) {
+            if (auto* sprite_renderer = registry.try_get<SpriteRenderer>(entity)) {
+                const auto& renderable = static_cast<const Renderable&>(*sprite_renderer);
+                const auto sprite_bounds = sprite_renderer->get_global_bounds(transform);
+
+                if (view_bounds.intersects(sprite_bounds)) {
+                    renderable.draw(transform.get_position());
+                }
+            }
         }
 
         void draw_no_camera() {

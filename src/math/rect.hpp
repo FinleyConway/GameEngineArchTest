@@ -28,6 +28,10 @@ namespace test
         Vector2<T> get_position() const;
 
         Vector2<T> get_size() const;
+
+        bool contains(T px, T py) const;
+
+        bool intersects(const Rect<T>& other) const;
     };
 
     using FloatRect = Rect<float>;

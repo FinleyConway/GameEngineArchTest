@@ -48,7 +48,7 @@ namespace test
             const auto& transform = registry.get<Transform>(entity);
             const auto& sprite = registry.get<SpriteRenderer>(entity);
 
-            FloatRect bounds = sprite.get_sprite().get_bounds(transform.get_position());
+            FloatRect bounds = sprite.get_global_bounds(transform);
 
             m_spatial_index.remove(entity);
             m_spatial_index.insert(entity, bounds);

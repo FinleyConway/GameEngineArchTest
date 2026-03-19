@@ -31,10 +31,10 @@ namespace test
             return m_texture_rect;
         }
 
-        FloatRect get_bounds(Vector2f position) const {
-            return FloatRect(
-                position.x - m_pivot.x,
-                position.y - m_pivot.y,
+        FloatRect get_bounds() const {
+            return test::FloatRect(
+                -m_pivot.x,
+                -m_pivot.y,
                 m_texture_rect.w,
                 m_texture_rect.h
             );
