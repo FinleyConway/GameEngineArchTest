@@ -5,7 +5,7 @@
 
 namespace test
 {
-    SpatialSystem::SpatialSystem(entt::registry& registry) : m_spatial_index(32.0f) {
+    SpatialSystem::SpatialSystem(entt::registry& registry) : m_registry(registry), m_spatial_index(32.0f) {
         registry.on_update<Transform>()
             .connect<&SpatialSystem::on_transform_change>(this);
 
@@ -16,23 +16,29 @@ namespace test
             .connect<&SpatialSystem::on_sprite_removed>(this);
     }
 
-    void SpatialSystem::on_sprite_added(entt::registry& registry, entt::entity entity) {
-        update_entity(registry, entity);
+    void SpatialSystem::on_sprite_added(entt::registry&, entt::entity entity) {
+        update_sprite(entity);
     }
 
     void SpatialSystem::on_sprite_removed(entt::registry&, entt::entity entity) {
         m_spatial_index.remove(entity);
     }
 
-    void SpatialSystem::on_transform_change(entt::registry& registry, entt::entity entity) {
-        if (registry.all_of<SpriteRenderer>(entity)) {
-            update_entity(registry, entity);
+    void SpatialSystem::on_transform_change(entt::registry&, entt::entity entity) {
+        if  (!m_deferred_entities.contains(entity)) {
+            m_deferred_entities.push(entity);
         }
     }
 
-    void SpatialSystem::update_entity(entt::registry& registry, entt::entity entity) {
-        const auto& transform = registry.get<Transform>(entity);
-        const auto& sprite = registry.get<SpriteRenderer>(entity);
+    void SpatialSystem::update_entity(entt::entity entity) {
+        if (m_registry.all_of<SpriteRenderer>(entity)) {
+            update_sprite(entity);
+        }
+    }
+
+    void SpatialSystem::update_sprite(entt::entity entity) {
+        const auto& transform = m_registry.get<Transform>(entity);
+        const auto& sprite = m_registry.get<SpriteRenderer>(entity);
 
         FloatRect bounds = sprite.get_global_bounds(transform);
 
