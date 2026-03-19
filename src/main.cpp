@@ -7,10 +7,15 @@
 #include "scene/components/transform.hpp"
 #include "scene/components/sprite_renderer.hpp"
 #include "scene/components/camera.hpp"
-#include "core/input/input.hpp"
+
+#include "rendering/sprite.hpp"
 #include "rendering/texture.hpp"
+
 #include "math/vector2.hpp"
 #include "math/rect.hpp"
+
+#include "core/input/input.hpp"
+#include "core/input/key.hpp"
 
 class Movement : public test::Updatable
 {

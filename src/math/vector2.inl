@@ -1,5 +1,7 @@
 #pragma once
 
+#include <format>
+
 #include "math/vector2.hpp"
 
 namespace test

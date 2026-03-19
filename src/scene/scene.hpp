@@ -16,68 +16,24 @@ namespace test
     class Scene
     {
     public: 
-        explicit Scene() : m_spatial_system(m_registry), m_render_system(m_spatial_system) { }
+        Scene();
 
-        Entity create_entity() {
-            entt::entity entity = m_registry.create();
+        Entity create_entity();
 
-            return Entity(entity, this);
-        }
+        void remove_entity(Entity entity);
 
-        void remove_entity(Entity entity) {
-            entity.kill();
-        }
+        void start();
 
-        void start() {
-            for (auto& system : m_start_systems) {
-                system(*this);
-            }
-        }
+        void update(float dt);
 
-        void update(float dt) {
-            for (auto& system : m_update_systems) {
-                system(*this, dt);
-            }
-        }
-
-        void render() {
-            m_render_system.render(m_registry);
-        }
+        void render();
 
     private:
         template<typename T, typename TInterface>
-        void register_start_system() {
-            auto type = std::type_index(typeid(T));
-            if (m_registered_start_systems.contains(type)) return;
-
-            m_registered_start_systems.insert(type);
-
-            m_start_systems.emplace_back([](Scene& scene) {
-                auto view = scene.m_registry.view<T>();
-
-                for (auto entity : view) {
-                    auto& comp = view.template get<T>(entity); 
-                    static_cast<TInterface&>(comp).start(Entity(entity, &scene));
-                }
-            });
-        }
+        void register_start_system();
 
         template<typename T, typename TInterface>
-        void register_update_system() {
-            auto type = std::type_index(typeid(T));
-            if (m_registered_update_systems.contains(type)) return;
-
-            m_registered_update_systems.insert(type);
-
-            m_update_systems.emplace_back([](Scene& scene, float dt) {
-                auto view = scene.m_registry.view<T>();
-
-                for (auto entity : view) {
-                    auto& comp = view.template get<T>(entity); 
-                    static_cast<TInterface&>(comp).update(Entity(entity, &scene), dt);
-                }
-            });
-        }
+        void register_update_system();
 
     private:
         friend class Entity;
@@ -95,4 +51,5 @@ namespace test
     };
 }
 
+#include "scene/scene.inl"
 #include "scene/entity.inl"

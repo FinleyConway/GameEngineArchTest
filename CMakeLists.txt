@@ -11,6 +11,17 @@ add_subdirectory(vendor/raylib)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
+
+    src/core/input/input.cpp
+
+    src/rendering/render_system.cpp
+    src/rendering/sprite.cpp
+    src/rendering/texture.cpp
+
+    src/spatial/spatial_index.cpp
+    src/spatial/spatial_system.cpp
+
+    src/utils/to_rl.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)

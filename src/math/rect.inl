@@ -1,5 +1,7 @@
 #pragma once
 
+#include <format>
+
 #include "math/rect.hpp"
 
 namespace test

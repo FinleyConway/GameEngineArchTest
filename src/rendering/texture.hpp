@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string.h>
+#include <string>
 
 #include <raylib.h>
 
@@ -9,36 +9,17 @@ namespace test
     class Texture
     {
     public:
-        explicit Texture() : m_handle({}) {
-        }
+        Texture();
 
-        explicit Texture(const std::string& file_name) {
-            m_handle = ::LoadTexture(file_name.c_str());
-        }
+        explicit Texture(const std::string& file_name);
 
-        ~Texture() {
-            if (m_handle.id != 0) {
-                ::UnloadTexture(m_handle);
-                m_handle = {};
-            }
-        }
+        ~Texture();
 
-        static Texture create_rectangle(int width, int height, Color color)
-        {
-            Image img = ::GenImageColor(width, height, color);
-            Texture tex;
+        static Texture create_rectangle(int width, int height, Color color);
 
-            tex.m_handle = ::LoadTextureFromImage(img);
-            ::UnloadImage(img);
+        bool is_valid() const;
 
-            return tex;
-        }
-
-        bool is_valid() const {
-            return ::IsTextureValid(m_handle);
-        }
-
-        const Texture2D& get_handle() const { return m_handle; }
+        const Texture2D& get_handle() const;
 
     private:
         Texture2D m_handle;
