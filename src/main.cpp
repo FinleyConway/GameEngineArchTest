@@ -8,8 +8,9 @@
 #include "scene/components/sprite_renderer.hpp"
 #include "scene/components/camera.hpp"
 #include "core/input/input.hpp"
-
 #include "rendering/texture.hpp"
+#include "math/vector2.hpp"
+#include "math/rect.hpp"
 
 class Movement : public test::Updatable
 {
@@ -77,4 +78,7 @@ int main()
     }
 
     CloseWindow();
+
+    test::FloatRect r;
+    
 }
