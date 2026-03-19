@@ -14,17 +14,14 @@ namespace test
         template<typename T, typename... Args>
         void add(Args&&... args);
 
-        template<typename T>
-        const T& get();
-
-        template<typename T>
-        const T* try_get();
+        template<typename T, typename Fn>
+        void read(Fn&& fn) const;
 
         template<typename T, typename Fn>
-        void mutate(Fn&& fn);
+        void write(Fn&& fn);
 
         template<typename T>
-        bool has();
+        bool has() const;
 
         template<typename T>
         void remove();

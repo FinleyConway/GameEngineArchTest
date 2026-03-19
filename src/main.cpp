@@ -21,12 +21,12 @@ private:
         if (IsKeyDown(KEY_A)) direction.x = -1;
         if (IsKeyDown(KEY_D)) direction.x = +1;
 
-        e.mutate<test::Camera>([&](auto& camera) {
+        e.write<test::Camera>([&](auto& camera) {
             if (IsKeyDown(KEY_UP)) camera.set_zoom(10);
             if (IsKeyDown(KEY_DOWN)) camera.set_zoom(1);
         });
 
-        e.mutate<test::Transform>([&](auto& transform) {
+        e.write<test::Transform>([&](auto& transform) {
             transform.x += direction.x * 64 * dt;
             transform.y += direction.y * 64 * dt;
         });

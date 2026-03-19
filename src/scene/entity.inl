@@ -15,8 +15,7 @@ namespace test
         if (valid()) {
             // check if it already exists
             if (has<T>()) {
-                // if it does we log and return
-                // add log
+                // add log "cannot add a component that a entity already has"
                 return;
             }
 
@@ -33,24 +32,20 @@ namespace test
         }
     }
 
-    template<typename T>
-    const T& Entity::get() {
-        if (!has<T>()) assert((void("Entity does not have this component"), false)); // at a log + assert, maybe spdlog in the future
+    template<typename T, typename Fn>
+    void Entity::read(Fn&& fn) const {
+        if (!has<T>()) {
+            // add log "cannot read from a component that a entity does not have"
+            return;
+        }
 
-        return m_scene->m_registry.template get<T>(m_handle);
-    }
-
-    template<typename T>
-    const T* Entity::try_get() {
-        if (!has<T>()) return nullptr;
-        
-        return &m_scene->m_registry.template get<T>(m_handle);
+        fn(m_scene->m_registry.template get<T>(m_handle));
     }
 
     template<typename T, typename Fn>
-    void Entity::mutate(Fn&& fn) {
+    void Entity::write(Fn&& fn) {
         if (!has<T>()) {
-            // add log
+            // add log "cannot write to a component that a entity does not have"
             return;
         }
 
@@ -58,13 +53,18 @@ namespace test
     }
 
     template<typename T>
-    bool Entity::has() {
-        return m_scene->m_registry.template all_of<T>(m_handle);
+    bool Entity::has() const {
+        return m_scene->m_registry.template all_of<T>(m_handle) && valid();
     }
 
     template<typename T>
     void Entity::remove() {
-        if (valid()) m_scene->m_registry.template remove<T>(m_handle);
+        if (!has<T>()) {
+            // add log "cannot remove a component that a entity does not have"
+            return;
+        }
+        
+        m_scene->m_registry.template remove<T>(m_handle);
     }
 
     inline void Entity::kill() {
