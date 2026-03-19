@@ -6,6 +6,8 @@
 
 #include <entt/entt.hpp>
 
+#include "math/rect.hpp"
+
 namespace test 
 {
     struct FixedBounds
@@ -14,14 +16,6 @@ namespace test
         int32_t min_y = 0;
         int32_t max_x = 0;
         int32_t max_y = 0;
-    };
-
-    struct AABB 
-    {
-        float x = 0;
-        float y = 0;
-        float w = 0;
-        float h = 0;
     };
 
     struct Cell 
@@ -58,7 +52,7 @@ namespace test
         }
 
         // Inserts an entity into the spatial grid using its bounding box.
-        void insert(entt::entity entity, const AABB& bounds) {
+        void insert(entt::entity entity, const FloatRect& bounds) {
             FixedBounds fb = to_fixed_bounds(bounds);
 
             for (int32_t cx = fb.min_x; cx <= fb.max_x; cx++) {
@@ -91,7 +85,7 @@ namespace test
 
         // Query a collection of entities using a given bounding box.
         template<typename Fn>
-        void query(const AABB& bounds, Fn&& fn) {
+        void query(const FloatRect& bounds, Fn&& fn) {
             std::vector<entt::entity> visited;
             FixedBounds fb = to_fixed_bounds(bounds);
             
@@ -131,7 +125,7 @@ namespace test
         }
 
         // Convert AABB to fixed bounds
-        FixedBounds to_fixed_bounds(const AABB& bounds) const {
+        FixedBounds to_fixed_bounds(const FloatRect& bounds) const {
             return {
                 .min_x = to_cell(bounds.x),
                 .min_y = to_cell(bounds.y),

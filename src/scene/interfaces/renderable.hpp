@@ -1,6 +1,6 @@
 #pragma once
 
-struct Vector2;
+#include "math/vector2.hpp"
 
 namespace test
 {
@@ -12,6 +12,6 @@ namespace test
     protected:
         friend class RenderSystem;
 
-        virtual void draw(Vector2 position) const = 0;
+        virtual void draw(Vector2f position) const = 0;
     };
 }

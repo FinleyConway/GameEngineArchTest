@@ -23,8 +23,8 @@ namespace test
     };
 
     using Vector2f = Vector2<float>;
-    using Vector2i = Vector2<int>;
-    using Vector2u = Vector2<unsigned int>;
+    using Vector2i = Vector2<int32_t>;
+    using Vector2u = Vector2<uint32_t>;
 
     template<typename T> Vector2<T> operator-(Vector2<T> right);
     template<typename T> Vector2<T>& operator+=(Vector2<T>& left, Vector2<T> right);

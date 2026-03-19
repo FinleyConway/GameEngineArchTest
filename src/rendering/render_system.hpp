@@ -7,12 +7,15 @@
 #include "scene/components/sprite_renderer.hpp"
 
 #include "spatial/spatial_system.hpp"
+#include "math/rect.hpp"
+
+#include "utils/to_rl.hpp"
 
 namespace test
 {
     struct CameraView {
         Camera2D rl_camera;
-        AABB bounds;
+        FloatRect bounds;
     };
 
     class RenderSystem 
@@ -65,17 +68,17 @@ namespace test
                     .x = screen_w / 2.0f, 
                     .y = screen_h / 2.0f 
                 },
-                .target = transform.get_position(),
+                .target = ToRl::from_vector2f(transform.get_position()),
                 .rotation = 0.0f, // no rotation support
                 .zoom = camera.get_zoom()
             };
 
-            AABB bounds {
-                .x = rl_camera.target.x - world_w / 2.0f,
-                .y = rl_camera.target.y - world_h / 2.0f,
-                .w = world_w,
-                .h = world_h
-            };
+            FloatRect bounds(
+                rl_camera.target.x - world_w / 2.0f,
+                rl_camera.target.y - world_h / 2.0f,
+                world_w,
+                world_h
+            );
 
             return CameraView(rl_camera, bounds);
         }

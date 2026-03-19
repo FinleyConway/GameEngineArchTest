@@ -4,6 +4,9 @@
 
 #include "scene/interfaces/renderable.hpp"
 #include "rendering/sprite.hpp"
+#include "math/vector2.hpp"
+
+#include "utils/to_rl.hpp"
 
 namespace test 
 {
@@ -19,17 +22,22 @@ namespace test
         }
 
     private:
-        void draw(Vector2 position) const override {
+        void draw(Vector2f position) const override {
             if (!m_sprite.get_texture().is_valid()) return; // maybe add a log here
 
             const Texture2D& handle = m_sprite.get_texture().get_handle();
-            Vector2 pivot = m_sprite.get_pivot();
-            Vector2 draw_position = {
-                .x = position.x - pivot.x,
-                .y = position.y - pivot.y
+            Vector2f pivot = m_sprite.get_pivot();
+            Vector2f draw_position = {
+                position.x - pivot.x,
+                position.y - pivot.y
             };
 
-            DrawTextureRec(handle, m_sprite.get_texture_rect(), draw_position, m_colour);
+            DrawTextureRec(
+                handle, 
+                ToRl::from_float_rect(m_sprite.get_texture_rect()), 
+                ToRl::from_vector2f(draw_position), 
+                m_colour
+            );
         }
 
     private:

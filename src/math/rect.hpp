@@ -31,8 +31,8 @@ namespace test
     };
 
     using FloatRect = Rect<float>;
-    using IntRect = Rect<int>;
-    using UIntRect = Rect<unsigned int>;
+    using IntRect = Rect<int32_t>;
+    using UIntRect = Rect<uint32_t>;
 }
 
 #include "math/rect.inl"

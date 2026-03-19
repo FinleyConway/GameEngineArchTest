@@ -16,7 +16,7 @@ class Movement : public test::Updatable
 {
 private:
     void update(test::Entity e, float dt) override {
-        Vector2 direction = {0,0};
+        test::Vector2f direction = {0,0};
 
         if (test::Input::is_key_held(test::Key::W)) direction.y = -1;
         if (test::Input::is_key_held(test::Key::S)) direction.y = +1;
@@ -29,8 +29,7 @@ private:
         });
 
         e.write<test::Transform>([&](auto& transform) {
-            transform.x += direction.x * 64 * dt;
-            transform.y += direction.y * 64 * dt;
+            transform.translate(direction * 64.0f * dt);
         });
     }
 };
@@ -78,7 +77,4 @@ int main()
     }
 
     CloseWindow();
-
-    test::FloatRect r;
-    
 }

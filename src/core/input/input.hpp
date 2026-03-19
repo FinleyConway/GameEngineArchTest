@@ -4,6 +4,7 @@
 
 #include "core/input/key.hpp"
 #include "core/input/mouse.hpp"
+#include "math/vector2.hpp"
 
 namespace test 
 {
@@ -22,8 +23,10 @@ namespace test
             return ::IsKeyReleased(key_to_raylib(key));
         }
 
-        static Vector2 get_mouse_position() {
-            return ::GetMousePosition();
+        static Vector2f get_mouse_position() {
+            ::Vector2 mouse_position = ::GetMousePosition();
+
+            return Vector2f(mouse_position.x, mouse_position.y);
         }
 
         static bool is_mouse_down(MouseButton button)

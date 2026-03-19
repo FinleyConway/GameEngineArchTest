@@ -1,26 +1,32 @@
 #pragma once
 
-#include <string>
-
-#include <raylib.h>
+#include "math/vector2.hpp"
 
 namespace test 
 {
     class Transform
     {
     public:
-        float x = 0;
-        float y = 0;
+        Transform() = default;
 
-        explicit Transform() = default;
-        Transform(float x, float y) : x(x), y(y) { }
+        Transform(float x, float y) : m_position(x, y) { }
 
-        Vector2 get_position() const {
-            return Vector2(x, y);
+        explicit Transform(Vector2f position) : m_position(position) { }
+
+    public:
+        Vector2f get_position() const {
+            return m_position;
         }
 
-        std::string to_str() const {
-            return std::format("[x:{}, y:{}]", x, y);
+        void set_position(Vector2f position) {
+            m_position = position;
         }
+
+        void translate(Vector2f position) {
+            m_position += position;
+        }
+
+    private:
+        Vector2f m_position;
     };
 }

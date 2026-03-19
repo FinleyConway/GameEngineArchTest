@@ -3,6 +3,8 @@
 #include <raylib.h>
 
 #include "rendering/texture.hpp"
+#include "math/rect.hpp"
+#include "math/vector2.hpp"
 
 namespace test 
 {
@@ -11,44 +13,44 @@ namespace test
     public:
         explicit Sprite() = default;
 
-        Sprite(const Texture& texture, const Rectangle& texture_rect) 
+        Sprite(const Texture& texture, const FloatRect& texture_rect) 
             : m_texture_rect(texture_rect), m_pivot(generate_pivot(texture_rect)), m_texture(texture) { }
 
-        Sprite(const Texture& texture, const Rectangle& texture_rect, Vector2 pivot) 
+        Sprite(const Texture& texture, const FloatRect& texture_rect, Vector2f pivot) 
             : m_texture_rect(texture_rect), m_pivot(pivot), m_texture(texture) { }
 
         const Texture& get_texture() const {
             return m_texture;
         }
 
-        Vector2 get_pivot() const {
+        Vector2f get_pivot() const {
             return m_pivot;
         }
 
-        Rectangle get_texture_rect() const {
+        FloatRect get_texture_rect() const {
             return m_texture_rect;
         }
 
-        Rectangle get_bounds(Vector2 position) const {
-            return {
-                .x = position.x - m_pivot.x,
-                .y = position.y - m_pivot.y,
-                .width  = m_texture_rect.width,
-                .height = m_texture_rect.height
-            };
+        FloatRect get_bounds(Vector2f position) const {
+            return FloatRect(
+                position.x - m_pivot.x,
+                position.y - m_pivot.y,
+                m_texture_rect.w,
+                m_texture_rect.h
+            );
         }
 
     private:
-        Vector2 generate_pivot(const Rectangle& texture_rect) {
-            return {
-                .x = texture_rect.width / 2.0f,
-                .y = texture_rect.height / 2.0f
-            };
+        Vector2f generate_pivot(const FloatRect& texture_rect) {
+            return Vector2f(
+                texture_rect.w / 2.0f,
+                texture_rect.h / 2.0f
+            );
         }
 
     private:
-        Rectangle m_texture_rect;
-        Vector2 m_pivot;
+        FloatRect m_texture_rect;
+        Vector2f m_pivot;
         Texture m_texture;
     };
 }

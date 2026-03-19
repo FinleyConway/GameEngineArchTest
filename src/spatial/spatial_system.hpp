@@ -2,9 +2,11 @@
 
 #include <raylib.h>
 
-#include "spatial/spatial_index.hpp"
 #include "scene/components/sprite_renderer.hpp"
 #include "scene/components/transform.hpp"
+
+#include "spatial/spatial_index.hpp"
+#include "math/rect.hpp"
 
 namespace test 
 {
@@ -23,7 +25,7 @@ namespace test
         }
 
         template<typename Func>
-        void query(const AABB& bounds, Func&& func) {
+        void query(const FloatRect& bounds, Func&& func) {
             m_spatial_index.query(bounds, std::forward<Func>(func));
         }
 
@@ -46,12 +48,10 @@ namespace test
             const auto& transform = registry.get<Transform>(entity);
             const auto& sprite = registry.get<SpriteRenderer>(entity);
 
-            Rectangle bounds = sprite.get_sprite().get_bounds(transform.get_position());
+            FloatRect bounds = sprite.get_sprite().get_bounds(transform.get_position());
 
             m_spatial_index.remove(entity);
-            m_spatial_index.insert(entity, {
-                bounds.x, bounds.y, bounds.width, bounds.height
-            });
+            m_spatial_index.insert(entity, bounds);
         }
 
     private:
