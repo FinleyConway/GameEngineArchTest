@@ -7,6 +7,7 @@
 #include "scene/components/transform.hpp"
 #include "scene/components/sprite_renderer.hpp"
 #include "scene/components/camera.hpp"
+#include "core/input/input.hpp"
 
 #include "rendering/texture.hpp"
 
@@ -16,14 +17,14 @@ private:
     void update(test::Entity e, float dt) override {
         Vector2 direction = {0,0};
 
-        if (IsKeyDown(KEY_W)) direction.y = -1;
-        if (IsKeyDown(KEY_S)) direction.y = +1;
-        if (IsKeyDown(KEY_A)) direction.x = -1;
-        if (IsKeyDown(KEY_D)) direction.x = +1;
+        if (test::Input::is_key_held(test::Key::W)) direction.y = -1;
+        if (test::Input::is_key_held(test::Key::S)) direction.y = +1;
+        if (test::Input::is_key_held(test::Key::A)) direction.x = -1;
+        if (test::Input::is_key_held(test::Key::D)) direction.x = +1;
 
         e.write<test::Camera>([&](auto& camera) {
-            if (IsKeyDown(KEY_UP)) camera.set_zoom(10);
-            if (IsKeyDown(KEY_DOWN)) camera.set_zoom(1);
+            if (test::Input::is_key_down(test::Key::Up)) camera.set_zoom(10);
+            if (test::Input::is_key_down(test::Key::Down)) camera.set_zoom(1);
         });
 
         e.write<test::Transform>([&](auto& transform) {
