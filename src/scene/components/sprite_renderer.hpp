@@ -1,17 +1,12 @@
 #pragma once
 
-#include <raylib.h>
-
-#include "scene/interfaces/renderable.hpp"
 #include "scene/components/transform.hpp"
 #include "rendering/sprite.hpp"
 #include "math/vector2.hpp"
 
-#include "utils/to_rl.hpp"
-
 namespace test 
 {
-    class SpriteRenderer : public Renderable
+    class SpriteRenderer
     {
     public:
         SpriteRenderer() = default;
@@ -30,27 +25,12 @@ namespace test
             );
         }
 
-        const Sprite& get_sprite() const {
-            return m_sprite;
+        const Color& get_colour() const {
+            return m_colour;
         }
 
-    private:
-        void draw(Vector2f position) const override {
-            if (!m_sprite.get_texture().is_valid()) return; // maybe add a log here
-
-            const Texture2D& handle = m_sprite.get_texture().get_handle();
-            Vector2f pivot = m_sprite.get_pivot();
-            Vector2f draw_position = {
-                position.x - pivot.x,
-                position.y - pivot.y
-            };
-
-            DrawTextureRec(
-                handle, 
-                ToRl::from_float_rect(m_sprite.get_texture_rect()), 
-                ToRl::from_vector2f(draw_position), 
-                m_colour
-            );
+        const Sprite& get_sprite() const {
+            return m_sprite;
         }
 
     private:

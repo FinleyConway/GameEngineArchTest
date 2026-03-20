@@ -4,7 +4,7 @@
 
 namespace test 
 {
-    Scene::Scene() : m_spatial_system(m_registry), m_render_system(m_spatial_system) { 
+    Scene::Scene(Renderer& renderer) : m_spatial_system(m_registry), m_render_system(renderer, m_spatial_system) { 
     }
 
     Entity Scene::create_entity() {

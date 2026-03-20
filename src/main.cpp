@@ -1,7 +1,6 @@
-#include <iostream>
-
 #include <raylib.h>
 
+#include "rendering/renderer.hpp"
 #include "scene/scene.hpp"
 #include "scene/interfaces/updatable.hpp"
 #include "scene/components/transform.hpp"
@@ -53,13 +52,15 @@ int main()
     InitWindow(500, 500, "window");
     SetTargetFPS(60);
 
+    test::Renderer renderer;
+
     test::Texture red_square = test::Texture::create_rectangle(64, 64, RED);
     test::Texture white_circle = test::Texture::create_rectangle(64, 64, WHITE);
 
     test::Sprite red_sprite(red_square, { 0, 0, 64, 64 });
     test::Sprite white_sprite(white_circle, { 0, 0, 64, 64 });
 
-    test::Scene scene;
+    test::Scene scene(renderer);
     auto e = scene.create_entity();
     e.add<test::Transform>();
     e.add<Movement>();
@@ -75,10 +76,9 @@ int main()
     while (!WindowShouldClose()) {
         scene.update(GetFrameTime());
 
-        BeginDrawing();
-        ClearBackground(BLACK);
-        scene.render();
-        EndDrawing();
+        renderer.draw_in_window(BLACK, [&]() {
+            scene.render();
+        });
     }
 
     CloseWindow();

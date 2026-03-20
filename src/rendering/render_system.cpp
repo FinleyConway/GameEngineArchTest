@@ -1,94 +1,49 @@
 #include "rendering/render_system.hpp"
 
+#include "rendering/renderer.hpp"
+#include "spatial/spatial_system.hpp"
 #include "scene/components/camera.hpp"
 #include "scene/components/transform.hpp"
 #include "scene/components/sprite_renderer.hpp"
-#include "spatial/spatial_system.hpp"
-#include "utils/to_rl.hpp"
 
 namespace test
 {
-    RenderSystem::RenderSystem(SpatialSystem& spatial) : m_spatial(spatial) {
+    RenderSystem::RenderSystem(Renderer& renderer, SpatialSystem& spatial) : m_renderer(renderer), m_spatial(spatial) {
     }
 
     void RenderSystem::render(entt::registry& registry) {
-        auto view = registry.view<Transform, Camera>();
+        auto view = registry.view<const Transform, const Camera>();
 
         if (view.begin() == view.end()) {
-            draw_no_camera();
+            m_renderer.draw_no_camera();
             return;
         }
 
-        view.each([&](auto entity, Transform& transform, Camera& camera) {
-            render_camera(registry, transform, camera);
+        view.each([&](auto entity, const Transform& transform, const Camera& camera) {
+            m_renderer.draw_in_view(transform, camera, [&](const FloatRect& bounds) {
+                render_visible_entities(registry, bounds);
+            });
         });
     }
 
-    void RenderSystem::render_camera(entt::registry& registry, const Transform& camera_transform, const Camera& camera)
+    void RenderSystem::render_visible_entities(entt::registry& registry, const FloatRect& bounds)
     {
-        CameraView view = compute_camera_view(camera_transform, camera);
+        m_spatial.query(bounds, [&](entt::entity entity) {
+            const auto& transform = registry.get<Transform>(entity);
 
-        BeginMode2D(view.rl_camera);
-
-        m_spatial.query(view.bounds, [&](entt::entity entity) {
-            const auto& sprite_transform = registry.get<Transform>(entity);
-
-            render_sprite(registry, entity, sprite_transform, view.bounds);
+            render_sprite(registry, entity, transform, bounds);
         });
-
-        EndMode2D();
-    }
-
-    RenderSystem::CameraView RenderSystem::compute_camera_view(const Transform& transform, const Camera& camera) {
-        float screen_w = GetScreenWidth();
-        float screen_h = GetScreenHeight();
-
-        float world_w = screen_w / camera.get_zoom();
-        float world_h = screen_h / camera.get_zoom();
-
-        Camera2D rl_camera {
-            .offset = { 
-                .x = screen_w / 2.0f, 
-                .y = screen_h / 2.0f 
-            },
-            .target = ToRl::from_vector2f(transform.get_position()),
-            .rotation = 0.0f, // no rotation support
-            .zoom = camera.get_zoom()
-        };
-
-        FloatRect bounds(
-            rl_camera.target.x - world_w / 2.0f,
-            rl_camera.target.y - world_h / 2.0f,
-            world_w,
-            world_h
-        );
-
-        return RenderSystem::CameraView(rl_camera, bounds);
     }
 
     void RenderSystem::render_sprite(entt::registry& registry, entt::entity entity, const Transform& transform, const FloatRect& view_bounds) {
         if (auto* sprite_renderer = registry.try_get<SpriteRenderer>(entity)) {
-            const auto& renderable = static_cast<const Renderable&>(*sprite_renderer);
+            const auto& sprite = sprite_renderer->get_sprite();
+            const auto& sprite_colour = sprite_renderer->get_colour();
             const auto sprite_bounds = sprite_renderer->get_global_bounds(transform);
 
             if (view_bounds.intersects(sprite_bounds)) {
-                renderable.draw(transform.get_position());
+                m_renderer.draw_sprite(transform.get_position(), sprite, sprite_colour);
             }
         }
-    }
-
-    void RenderSystem::draw_no_camera() {
-        const char* text = "No camera in the scene!";
-        int font_size = 20;
-
-        int text_width = MeasureText(text, font_size);
-
-        DrawText(
-            text,
-            (GetScreenWidth() - text_width) / 2,
-            (GetScreenHeight() - font_size) / 2,
-            font_size,
-            RED
-        );
     }
 }

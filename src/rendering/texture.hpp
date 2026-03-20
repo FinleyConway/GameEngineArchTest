@@ -19,6 +19,9 @@ namespace test
 
         bool is_valid() const;
 
+    private:
+        friend class Renderer;
+
         const Texture2D& get_handle() const;
 
     private:

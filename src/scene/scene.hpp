@@ -13,10 +13,12 @@
 
 namespace test 
 {
+    class Renderer;
+
     class Scene
     {
     public: 
-        Scene();
+        Scene(Renderer& renderer);
 
         Entity create_entity();
 

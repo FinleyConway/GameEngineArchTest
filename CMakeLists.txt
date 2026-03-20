@@ -15,6 +15,7 @@ add_executable(${PROJECT_NAME}
     src/core/input/input.cpp
 
     src/rendering/render_system.cpp
+    src/rendering/renderer.cpp
     src/rendering/sprite.cpp
     src/rendering/texture.cpp
 
