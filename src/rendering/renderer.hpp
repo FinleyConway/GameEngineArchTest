@@ -20,10 +20,14 @@ namespace test
         };
 
     public:
+        void set_background_colour(::Color colour) { // camera will use this set the background colour before render
+            m_background_colour = colour;
+        }
+
         template<typename Fn>
-        void draw_in_window(const Color& clear_colour, Fn&& fn) {
+        void draw_in_window(Fn&& fn) {
             ::BeginDrawing();
-            ::ClearBackground(clear_colour);
+            ::ClearBackground(m_background_colour);
 
             fn();
 
@@ -43,9 +47,12 @@ namespace test
 
         void draw_no_camera();
 
-        void draw_sprite(Vector2f position, const Sprite& sprite, const Color& colour);
+        void draw_sprite(Vector2f position, const Sprite& sprite, const ::Color& colour);
 
     private:
         CameraView compute_camera_view(const Transform& transform, const Camera& camera) const;
+
+    private:
+        ::Color m_background_colour = BLACK; 
     };
 }

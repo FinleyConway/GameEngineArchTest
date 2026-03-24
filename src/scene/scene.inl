@@ -18,8 +18,12 @@ namespace test
     }
 
     void Scene::start() {
-        for (auto& system : m_start_systems) {
-            system(*this);
+        if (!m_started) {
+            m_started = true;
+
+            for (auto& system : m_start_systems) {
+                system(*this);
+            }
         }
     }
 
@@ -31,6 +35,10 @@ namespace test
 
     void Scene::render() {
         m_render_system.render(m_registry);
+    }
+
+    void Scene::end() {
+        m_started = false;
     }
 
     template<typename T, typename TInterface>

@@ -1,20 +1,14 @@
-#include <raylib.h>
+#include "core/application.hpp"
 
-#include "rendering/renderer.hpp"
-#include "scene/scene.hpp"
-#include "scene/interfaces/updatable.hpp"
-#include "scene/components/transform.hpp"
-#include "scene/components/sprite_renderer.hpp"
-#include "scene/components/camera.hpp"
+#include "test.h"
 
-#include "rendering/sprite.hpp"
-#include "rendering/texture.hpp"
-
-#include "math/vector2.hpp"
-#include "math/rect.hpp"
-
-#include "core/input/input.hpp"
-#include "core/input/key.hpp"
+/*
+REF: https://skypjack.github.io/entt/md_docs_2md_2entity.html
+Ideas:
+- Since mutate<T>() can send events to anything that uses on_update, components could listen to changes?
+- Enemy mutates player health (take dmg) -> Player component could listen, has health changed? -> play hurt sound
+- Will make it easier for e.g. rendering and only update the sprite position in data structure when transform changes
+*/
 
 class Movement : public test::Updatable
 {
@@ -38,21 +32,9 @@ private:
     }
 };
 
-/*
-REF: https://skypjack.github.io/entt/md_docs_2md_2entity.html
-Ideas:
-- Since mutate<T>() can send events to anything that uses on_update, components could listen to changes?
-- Enemy mutates player health (take dmg) -> Player component could listen, has health changed? -> play hurt sound
-- Will make it easier for e.g. rendering and only update the sprite position in data structure when transform changes
-*/
-
 int main()
 {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(500, 500, "window");
-    SetTargetFPS(60);
-
-    test::Renderer renderer;
+    test::Application app({ test::Vector2i(500, 500), "test" });
 
     test::Texture red_square = test::Texture::create_rectangle(64, 64, RED);
     test::Texture white_circle = test::Texture::create_rectangle(64, 64, WHITE);
@@ -60,26 +42,19 @@ int main()
     test::Sprite red_sprite(red_square, { 0, 0, 64, 64 });
     test::Sprite white_sprite(white_circle, { 0, 0, 64, 64 });
 
-    test::Scene scene(renderer);
-    auto e = scene.create_entity();
-    e.add<test::Transform>();
-    e.add<Movement>();
-    e.add<test::SpriteRenderer>(red_sprite);
-    e.add<test::Camera>();
+    app.add_scene("game", [&](test::Scene& scene) {
+        auto e = scene.create_entity();
+        e.add<test::Transform>();
+        e.add<Movement>();
+        e.add<test::SpriteRenderer>(red_sprite);
+        e.add<test::Camera>();
 
-    auto c = scene.create_entity();
-    c.add<test::Transform>(0, 64);
-    c.add<test::SpriteRenderer>(white_sprite);
+        auto c = scene.create_entity();
+        c.add<test::Transform>(0, 64);
+        c.add<test::SpriteRenderer>(white_sprite);
+    });
 
-    scene.start();
+    app.set_current_scene("game");
 
-    while (!WindowShouldClose()) {
-        scene.update(GetFrameTime());
-
-        renderer.draw_in_window(BLACK, [&]() {
-            scene.render();
-        });
-    }
-
-    CloseWindow();
+    app.run();
 }

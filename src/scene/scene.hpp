@@ -30,6 +30,8 @@ namespace test
 
         void render();
 
+        void end();
+
     private:
         template<typename T, typename TInterface>
         void register_start_system();
@@ -50,6 +52,8 @@ namespace test
 
         SpatialSystem m_spatial_system;
         RenderSystem m_render_system;
+
+        bool m_started = false;
     };
 }
 
