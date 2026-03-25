@@ -23,7 +23,7 @@ namespace test
         void add_scene(const std::string& identifier, Fn&& fn) {
             auto scene = std::make_unique<Scene>(m_renderer);
 
-            fn(*scene.get());                          
+            std::forward<Fn>(fn)(*scene.get());                          
 
             m_scene_manager.add_scene(identifier, std::move(scene));
         }

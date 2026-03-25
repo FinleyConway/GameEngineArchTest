@@ -29,7 +29,7 @@ namespace test
             ::BeginDrawing();
             ::ClearBackground(m_background_colour);
 
-            fn();
+            std::forward<Fn>(fn)();
 
             ::EndDrawing();
         }   
@@ -40,7 +40,7 @@ namespace test
 
             ::BeginMode2D(view.rl_camera);
 
-            fn(view.bounds);
+            std::forward<Fn>(fn)(view.bounds);
 
             ::EndMode2D();
         }

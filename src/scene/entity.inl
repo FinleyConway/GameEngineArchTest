@@ -39,7 +39,7 @@ namespace test
             return;
         }
 
-        fn(m_scene->m_registry.template get<T>(m_handle));
+        std::forward<Fn>(fn)(m_scene->m_registry.template get<T>(m_handle));
     }
 
     template<typename T, typename Fn>

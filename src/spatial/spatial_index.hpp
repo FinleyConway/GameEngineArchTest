@@ -34,7 +34,7 @@ namespace test
             for (int32_t cx = fb.min_x; cx <= fb.max_x; cx++) {
                 for (int32_t cy = fb.min_y; cy <= fb.max_y; cy++) {
                     if (auto it = m_cells.find(Cell(cx, cy)); it != m_cells.end()) {
-                        get_unique(it->second, visited, fn);
+                        get_unique(it->second, visited, std::forward<Fn>(fn));
                     }
                 }
             }
@@ -47,7 +47,7 @@ namespace test
             for (auto entity : vec) {
                 if (std::find(visited.begin(), visited.end(), entity) == visited.end()) {
                     visited.emplace_back(entity);
-                    fn(entity);
+                    std::forward<Fn>(fn)(entity);
                 }
             }
         }
