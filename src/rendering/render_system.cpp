@@ -29,10 +29,29 @@ namespace test
     void RenderSystem::render_visible_entities(entt::registry& registry, const FloatRect& bounds)
     {
         m_spatial.query(bounds, [&](entt::entity entity) {
+            int32_t sort_order = 0;
+
+            if (const auto* sr = registry.try_get<SpriteRenderer>(entity)) {
+                sort_order = sr->get_sort_order();
+            }
+
+            m_queried_entities.emplace_back(RenderEntity(entity, sort_order));
+        });
+
+        std::sort(m_queried_entities.begin(), m_queried_entities.end(), sort_entities);
+
+        for (const auto& render_entity : m_queried_entities) {
+            const auto entity = render_entity.entity;
             const auto& transform = registry.get<Transform>(entity);
 
             render_sprite(registry, entity, transform, bounds);
-        });
+        }
+
+        m_queried_entities.clear();
+    }
+
+    bool RenderSystem::sort_entities(const RenderEntity& a, const RenderEntity& b) {
+        return a.sort_order < b.sort_order;
     }
 
     void RenderSystem::render_sprite(entt::registry& registry, entt::entity entity, const Transform& transform, const FloatRect& view_bounds) {

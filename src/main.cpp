@@ -46,7 +46,7 @@ int main()
         auto e = scene.create_entity();
         e.add<test::Transform>();
         e.add<Movement>();
-        e.add<test::SpriteRenderer>(red_sprite);
+        e.add<test::SpriteRenderer>(red_sprite, 1);
         e.add<test::Camera>();
 
         auto c = scene.create_entity();
