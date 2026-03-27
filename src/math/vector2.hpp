@@ -21,6 +21,8 @@ namespace test
 
     public:
         std::string to_string() const;
+
+        float lerp(Vector2 a, Vector2 b, float t) const;
     };
 
     using Vector2f = Vector2<float>;

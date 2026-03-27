@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 
 #include "rail_types.hpp"
 
@@ -23,46 +24,36 @@ public:
         m_active_mask = bits;
     }
 
-    Dir get_exit(Dir from) const {
-        uint8_t f = to_bits(from);
-
-        // must be part of the rail
-        if (!(to_bits(m_type) & f))
-            return Dir::None;
-
-        // not a junction so just return the other connected direction
-        if (!is_junction_type(m_type))
-        {
-            uint8_t other = to_bits(m_type) ^ f;
-            return from_bits(other);
-        }
-
-        // is a junction so must follow active flow
-        if (!(m_active_mask & f))
-            return Dir::None;
-
-        uint8_t other = m_active_mask ^ f;
-
-        return from_bits(other);
-    }
-
-    bool can_travel_to(Dir d) const {
+    bool is_direction_active(Dir d) const {
         uint8_t bit = to_bits(d);
 
-        if (!(to_bits(m_type) & bit))
-            return false;
-
-        if (!is_junction_type(m_type))
-            return true;
+        if (!has_dir(bit)) return false;
+        if (!is_junction_type(m_type)) return true;
 
         return (m_active_mask & bit) != 0;
     }
 
+    Dir try_get_exit(Dir from) const {
+        if (!is_direction_active(from)) return Dir::None;
+
+        if (!is_junction_type(m_type)) {
+            uint8_t other = to_bits(m_type) ^ to_bits(from);
+            
+            return from_bits(other);
+        }
+
+        uint8_t other = m_active_mask ^ to_bits(from);
+
+        return from_bits(other);
+    }
+
 private:
-    bool is_junction_type(Type type) const
-    {
-        switch (type)
-        {
+    bool has_dir(uint8_t dir) const {
+        return to_bits(m_type) & dir;
+    }
+
+    bool is_junction_type(Type type) const {
+        switch (type) {
             case Type::TJunctionDown:   return true;
             case Type::TJunctionUp:     return true;
             case Type::TJunctionLeft:   return true;

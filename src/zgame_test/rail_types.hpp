@@ -62,7 +62,7 @@ std::array<Dir, 12> get_all_dirs() {
 
 template<typename Enum>
 static std::underlying_type_t<Enum> to_bits(Enum e) {
-    return std::underlying_type_t<Enum>>(e);
+    return std::underlying_type_t<Enum>(e);
 }
 
 Dir from_bits(uint8_t bits) {

@@ -14,9 +14,12 @@ class MineCart : public test::Updatable
 private:
     void update(test::Entity e, float dt) {
         Rail rail = get_next_rail(get_direction_offset());
-        bool can_travel_to = rail.can_travel_to(m_current_travelling_dir) && !is_current_rail(rail);
+        
+        Dir next_direction = rail.try_get_exit(m_current_travelling_dir);
+        bool is_new_rail = !is_current_rail(rail);
 
-        if (can_travel_to) {
+        if (next_direction != Dir::None && is_new_rail) {
+            
         }
     }
 

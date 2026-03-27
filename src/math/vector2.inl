@@ -1,6 +1,8 @@
 #pragma once
 
+#include <algorithm>
 #include <format>
+#include <cmath>
 
 #include "math/vector2.hpp"
 
@@ -18,6 +20,16 @@ namespace test
     template<typename T>
     std::string Vector2<T>::to_string() const {
         return std::format("({}, {})", x, y);
+    }
+
+    template<typename T>
+    float Vector2<T>::lerp(Vector2<T> a, Vector2<T> b, float t) const {
+        t = std::clamp(t, 0.0f, 1.0f);
+
+        T x = std::lerp(a.x, b.x, t);
+        T y = std::lerp(a.y, b.y, t);
+
+        return Vector2<T>(x, y);
     }
 
     template <typename T>

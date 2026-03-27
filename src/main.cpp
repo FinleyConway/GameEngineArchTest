@@ -1,6 +1,10 @@
+#include <iostream>
+
 #include "core/application.hpp"
 
 #include "test.h"
+
+#include "zgame_test/rail.hpp"
 
 /*
 REF: https://skypjack.github.io/entt/md_docs_2md_2entity.html
