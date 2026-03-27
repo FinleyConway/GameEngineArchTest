@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+#include <unordered_map>
 #include <vector>
 #include <typeindex>
 #include <functional>
@@ -39,6 +41,9 @@ namespace test
         template<typename T, typename TInterface>
         void register_update_system();
 
+        template<typename T>
+        void register_singleton(T* component);
+
     private:
         friend class Entity;
 
@@ -49,6 +54,8 @@ namespace test
 
         std::vector<std::function<void(Scene&, float)>> m_update_systems;
         std::unordered_set<std::type_index> m_registered_update_systems;
+
+        std::unordered_map<std::type_index, void*> m_singletons;
 
         SpatialSystem m_spatial_system;
         RenderSystem m_render_system;

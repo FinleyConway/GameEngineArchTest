@@ -6,16 +6,15 @@
 
 #include "math/vector2.hpp"
 
+enum class GridError {
+    None,
+    IsEmpty,
+    OutOfBounds
+};
+
 template<typename T>
 class Grid 
 {
-public:
-    enum class Error {
-        None,
-        IsEmpty,
-        OutOfBounds
-    };
-
 public:
     Grid() = default;
 
@@ -43,44 +42,44 @@ public:
         return is_within(position.x, position.y);
     }
 
-    std::expected<T&, Error> get(int32_t x, int32_t y) {
-        if (m_data.empty()) return std::unexpected(Error::IsEmpty);
-        if (!is_within(x, y)) return std::unexpected(Error::OutOfBounds);
+    std::expected<T*, GridError> get(int32_t x, int32_t y) {
+        if (m_data.empty()) return std::unexpected(GridError::IsEmpty);
+        if (!is_within(x, y)) return std::unexpected(GridError::OutOfBounds);
 
-        return m_data[get_index(x, y)];
+        return &m_data[get_index(x, y)];
     }
 
-    std::expected<T&, Error> get(test::Vector2i position) {
+    std::expected<T*, GridError> get(test::Vector2i position) {
         return get(position.x, position.y);
     }
 
-    std::expected<const T&, Error> get(int32_t x, int32_t y) const {
-        if (m_data.empty()) return std::unexpected(Error::IsEmpty);
-        if (!is_within(x, y)) return std::unexpected(Error::OutOfBounds);
+    std::expected<const T*, GridError> get(int32_t x, int32_t y) const {
+        if (m_data.empty()) return std::unexpected(GridError::IsEmpty);
+        if (!is_within(x, y)) return std::unexpected(GridError::OutOfBounds);
 
-        return m_data[get_index(x, y)];
+        return &m_data[get_index(x, y)];
     }
 
-    std::expected<const T&, Error> get(test::Vector2i position) const {
+    std::expected<const T*, GridError> get(test::Vector2i position) const {
         return get(position.x, position.y);
     }
 
-    Error set(int32_t x, int32_t y, const T& value) {
-        if (m_data.empty()) return Error::IsEmpty;
-        if (!is_within(x, y)) return Error::OutOfBounds;
+    GridError set(int32_t x, int32_t y, const T& value) {
+        if (m_data.empty()) return GridError::IsEmpty;
+        if (!is_within(x, y)) return GridError::OutOfBounds;
 
         m_data[get_index(x, y)] = value;
 
-        return Error::None;
+        return GridError::None;
     }
 
-    Error set(test::Vector2i position, const T& value) {
+    GridError set(test::Vector2i position, const T& value) {
         return set(position.x, position.y, value);
     }
 
 private:
     int32_t get_index(int32_t x, int32_t y) const {
-        return y * m_width + x;
+        return x + m_width * y;
     }
 
 private:

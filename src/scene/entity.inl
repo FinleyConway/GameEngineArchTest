@@ -6,6 +6,7 @@
 #include "scene/scene.hpp"
 #include "scene/interfaces/initialisable.hpp"
 #include "scene/interfaces/updatable.hpp"
+#include "scene/interfaces/singleton.hpp"
 
 namespace test 
 {
@@ -20,7 +21,11 @@ namespace test
             }
 
             // add component and apply it to the update group
-            m_scene->m_registry.template emplace<T>(m_handle, std::forward<Args>(args)...);
+            auto& component = m_scene->m_registry.template emplace<T>(m_handle, std::forward<Args>(args)...);
+
+            if constexpr (std::derived_from<T, Singleton<T>>) {
+                m_scene->template register_singleton<T>(&component);
+            }
 
             if constexpr (std::derived_from<T, Initialisable>) {
                 m_scene->template register_start_system<T, Initialisable>();
@@ -43,6 +48,18 @@ namespace test
     }
 
     template<typename T, typename Fn>
+    void Entity::read_singleton(Fn&& fn) const {
+        auto it = m_scene->m_singletons.find(typeid(T));
+
+        if (it == m_scene->m_singletons.end()) {
+            // add log "singleton not created"
+            return;
+        }
+
+        std::forward<Fn>(fn)(*static_cast<T*>(it->second));
+    }
+
+    template<typename T, typename Fn>
     void Entity::write(Fn&& fn) {
         if (!has<T>()) {
             // add log "cannot write to a component that a entity does not have"
@@ -50,6 +67,18 @@ namespace test
         }
 
         m_scene->m_registry.patch<T>(m_handle, std::forward<Fn>(fn));
+    }
+
+    template<typename T, typename Fn>
+    void Entity::write_singleton(Fn&& fn) {
+        auto it = m_scene->m_singletons.find(typeid(T));
+
+        if (it == m_scene->m_singletons.end()) {
+            // add log "singleton not created"
+            return;
+        }
+
+        std::forward<Fn>(fn)(*static_cast<T*>(it->second));
     }
 
     template<typename T>

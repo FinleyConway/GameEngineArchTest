@@ -8,6 +8,10 @@
 class Rail
 {
 public:
+    Rail() = default;
+
+    explicit Rail(Type type) : m_type(type) { }
+
     Type get_type() const {
         return m_type;
     }
@@ -38,7 +42,7 @@ public:
 
         if (!is_junction_type(m_type)) {
             uint8_t other = to_bits(m_type) ^ to_bits(from);
-            
+
             return from_bits(other);
         }
 
@@ -64,6 +68,6 @@ private:
     }
 
 private:
-    Type m_type;
+    Type m_type = Type::None;
     uint8_t m_active_mask = 0;
 };

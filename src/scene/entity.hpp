@@ -18,7 +18,13 @@ namespace test
         void read(Fn&& fn) const;
 
         template<typename T, typename Fn>
+        void read_singleton(Fn&& fn) const;
+
+        template<typename T, typename Fn>
         void write(Fn&& fn);
+
+        template<typename T, typename Fn>
+        void write_singleton(Fn&& fn);
 
         template<typename T>
         bool has() const;

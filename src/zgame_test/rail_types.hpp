@@ -78,3 +78,19 @@ Dir from_bits(uint8_t bits) {
         default:  return Dir::None;
     }
 }
+
+Dir opposite_dir(Dir dir) {
+    switch (dir) {
+        case Dir::N:  return Dir::S;
+        case Dir::S:  return Dir::N;
+        case Dir::E:  return Dir::W;
+        case Dir::W:  return Dir::E;
+
+        case Dir::NE: return Dir::SW;
+        case Dir::NW: return Dir::SE;
+        case Dir::SE: return Dir::NW;
+        case Dir::SW: return Dir::NE;
+
+        default:      return Dir::None;
+    }
+}

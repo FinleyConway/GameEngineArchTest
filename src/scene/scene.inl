@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/scene.hpp"
+#include <memory>
 
 namespace test 
 {
@@ -44,7 +45,8 @@ namespace test
     template<typename T, typename TInterface>
     void Scene::register_start_system() {
         auto type = std::type_index(typeid(T));
-        if (m_registered_start_systems.contains(type)) return;
+
+        if (m_registered_start_systems.contains(type)) return; // add log?
 
         m_registered_start_systems.insert(type);
 
@@ -61,7 +63,8 @@ namespace test
     template<typename T, typename TInterface>
     void Scene::register_update_system() {
         auto type = std::type_index(typeid(T));
-        if (m_registered_update_systems.contains(type)) return;
+
+        if (m_registered_update_systems.contains(type)) return; // add log?
 
         m_registered_update_systems.insert(type);
 
@@ -73,5 +76,14 @@ namespace test
                 static_cast<TInterface&>(comp).update(Entity(entity, &scene), dt);
             }
         });
+    }
+
+    template<typename T>
+    void Scene::register_singleton(T* component) {
+        auto type = std::type_index(typeid(T));
+
+        if (m_singletons.contains(type)) return; // add log?
+
+        m_singletons.emplace(type, component);
     }
 }

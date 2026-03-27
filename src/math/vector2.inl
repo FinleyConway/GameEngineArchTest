@@ -23,13 +23,13 @@ namespace test
     }
 
     template<typename T>
-    float Vector2<T>::lerp(Vector2<T> a, Vector2<T> b, float t) const {
+    Vector2<T> Vector2<T>::lerp(Vector2<T> to, float t) const {
         t = std::clamp(t, 0.0f, 1.0f);
 
-        T x = std::lerp(a.x, b.x, t);
-        T y = std::lerp(a.y, b.y, t);
-
-        return Vector2<T>(x, y);
+        return {
+            std::lerp(x, to.x, t),
+            std::lerp(y, to.y, t)
+        };
     }
 
     template <typename T>
