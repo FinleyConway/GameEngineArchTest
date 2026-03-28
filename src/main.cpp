@@ -1,6 +1,4 @@
 #include "core/application.hpp"
-#include "scene/components/camera.hpp"
-#include "scene/components/transform.hpp"
 #include "test.h"
 
 #include "zgame_test/mine_cart.hpp"

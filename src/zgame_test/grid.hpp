@@ -2,6 +2,7 @@
 
 #include <expected>
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 #include "math/vector2.hpp"
@@ -11,6 +12,12 @@ enum class GridError {
     IsEmpty,
     OutOfBounds
 };
+
+template <typename T>
+using CellRef = std::expected<std::reference_wrapper<T>, GridError>;
+
+template <typename T>
+using CellCRef = std::expected<std::reference_wrapper<const T>, GridError>;
 
 template<typename T>
 class Grid 
@@ -42,25 +49,25 @@ public:
         return is_within(position.x, position.y);
     }
 
-    std::expected<T*, GridError> get(int32_t x, int32_t y) {
+    CellRef<T> get(int32_t x, int32_t y) {
         if (m_data.empty()) return std::unexpected(GridError::IsEmpty);
         if (!is_within(x, y)) return std::unexpected(GridError::OutOfBounds);
 
-        return &m_data[get_index(x, y)];
+        return std::ref(m_data[get_index(x, y)]);
     }
 
-    std::expected<T*, GridError> get(test::Vector2i position) {
+    CellRef<T> get(test::Vector2i position) {
         return get(position.x, position.y);
     }
 
-    std::expected<const T*, GridError> get(int32_t x, int32_t y) const {
+    CellCRef<T> get(int32_t x, int32_t y) const {
         if (m_data.empty()) return std::unexpected(GridError::IsEmpty);
         if (!is_within(x, y)) return std::unexpected(GridError::OutOfBounds);
 
-        return &m_data[get_index(x, y)];
+        return std::cref(m_data[get_index(x, y)]);
     }
 
-    std::expected<const T*, GridError> get(test::Vector2i position) const {
+    CellCRef<T> get(test::Vector2i position) const {
         return get(position.x, position.y);
     }
 

@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <type_traits>
 
 #include "rail_types.hpp"
 
@@ -52,6 +53,25 @@ public:
     }
 
 private:
+    template<typename Enum>
+    std::underlying_type_t<Enum> to_bits(Enum e) const {
+        return std::underlying_type_t<Enum>(e);
+    }
+
+    Dir from_bits(uint8_t bits) const {
+        switch (bits) {
+            case 1:   return Dir::N;
+            case 2:   return Dir::NE;
+            case 4:   return Dir::E;
+            case 8:   return Dir::SE;
+            case 16:  return Dir::S;
+            case 32:  return Dir::SW;
+            case 64:  return Dir::W;
+            case 128: return Dir::NW;
+            default:  return Dir::None;
+        }
+    }
+
     bool has_dir(uint8_t dir) const {
         return to_bits(m_type) & dir;
     }

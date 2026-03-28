@@ -1,6 +1,8 @@
 #pragma once
 
-#include "raylib.h"
+#include <optional>
+
+// #include "raylib.h"
 #include "scene/entity.hpp"
 #include "scene/interfaces/initialisable.hpp"
 #include "scene/interfaces/updatable.hpp"
@@ -13,6 +15,8 @@
 
 class MineCart : public test::Initialisable, public test::Updatable
 {
+struct NextRailInfo;
+
 public:
     void place_on_rail(test::Entity e, Dir init_direction, Rail rail, test::Vector2f position) {
         m_current_travelling_dir = init_direction;
@@ -51,11 +55,11 @@ private:
             tform.set_position(current_pos);
         });
 
-        DrawText(std::format("{}", (int)m_current_travelling_dir).c_str(), 5, 5, 12, WHITE);
-        DrawText(std::format("{}", (int)m_current_rail.get_type()).c_str(), 5, 15, 12, WHITE);
-        DrawText(std::format("{}", m_last_position.to_string()).c_str(), 5, 25, 12, WHITE);
-        DrawText(std::format("{}", m_next_position.to_string()).c_str(), 5, 35, 12, WHITE);
-        DrawText(std::format("{}", t).c_str(), 5, 45, 12, WHITE);
+        // DrawText(std::format("{}", (int)m_current_travelling_dir).c_str(), 5, 5, 12, WHITE);
+        // DrawText(std::format("{}", (int)m_current_rail.get_type()).c_str(), 5, 15, 12, WHITE);
+        // DrawText(std::format("{}", m_last_position.to_string()).c_str(), 5, 25, 12, WHITE);
+        // DrawText(std::format("{}", m_next_position.to_string()).c_str(), 5, 35, 12, WHITE);
+        // DrawText(std::format("{}", t).c_str(), 5, 45, 12, WHITE);
     }
 
     void get_next_rail_info(test::Entity e) {
@@ -64,29 +68,41 @@ private:
                 m_last_position, rail_map.get_cell_size()
             );
 
-            Dir entry_dir = opposite_dir(m_current_travelling_dir);
-            Dir exit_dir = m_current_rail.try_get_exit(entry_dir);
-
-            if (exit_dir == Dir::None) return; // dead end
-
-            test::Vector2i next_grid_pos = grid_position + direction_to_offset(exit_dir);
-
-            if (auto maybe_rail = rail_map.get_rail(next_grid_pos)) {
-                Rail next_rail = *maybe_rail.value();
-                Dir next_entry = opposite_dir(exit_dir);
-
-                if (!next_rail.is_direction_active(next_entry)) {
-                    return;
-                }
-
-                m_current_rail = next_rail;
-                m_current_travelling_dir = exit_dir;
-                m_next_position = GridUtils::grid_to_pixel(next_grid_pos, rail_map.get_cell_size());
-                m_current_time = 0.0f;
+            if (auto next = get_next_rail(rail_map, grid_position)) {
+                apply_next_rail(next.value(), rail_map);
             }
         });
     }
     
+    std::optional<NextRailInfo> get_next_rail(const RailMap& rail_map, test::Vector2i grid_position) {
+        // get the next travelling direction
+        Dir entry_dir = opposite_dir(m_current_travelling_dir);
+        Dir exit_dir = m_current_rail.try_get_exit(entry_dir);
+
+        if (exit_dir == Dir::None) return std::nullopt; // no exit
+
+        // get the next rail based on the next travelling direction
+        test::Vector2i next_grid_pos = grid_position + direction_to_offset(exit_dir);
+        auto maybe_rail = rail_map.get_rail(next_grid_pos);
+        
+        if (!maybe_rail) return std::nullopt; // no rail
+
+        // get and return the next rail information
+        const Rail& next_rail = maybe_rail.value();
+        Dir next_entry = opposite_dir(exit_dir);
+
+        if (!next_rail.is_direction_active(next_entry)) return std::nullopt;
+
+        return NextRailInfo(next_rail, exit_dir, next_grid_pos);
+    }
+
+    void apply_next_rail(const NextRailInfo& info, const RailMap& rail_map) {
+        m_current_rail = info.rail;
+        m_current_travelling_dir = info.travel_dir;
+        m_next_position = GridUtils::grid_to_pixel(info.next_grid_pos, rail_map.get_cell_size());
+        m_current_time = 0.0f;
+    }
+
     test::Vector2i direction_to_offset(Dir dir) const {
         switch (dir) {
             case Dir::N:    return test::Vector2i(+0, +1);
@@ -96,6 +112,24 @@ private:
             default:        return test::Vector2i(+0, +0);
         }
     }
+
+    Dir opposite_dir(Dir dir) const {
+        switch (dir) {
+            case Dir::N:  return Dir::S;
+            case Dir::S:  return Dir::N;
+            case Dir::E:  return Dir::W;
+            case Dir::W:  return Dir::E;
+            default:      return Dir::None;
+        }
+    }
+
+private:
+    struct NextRailInfo 
+    {
+        Rail rail;
+        Dir travel_dir;
+        test::Vector2i next_grid_pos;
+    };
 
 private:
     test::Vector2f m_next_position;

@@ -34,7 +34,7 @@ public:
         return m_rails.set(position, Rail(rail));
     }
 
-    std::expected<const Rail*, GridError> get_rail(test::Vector2i position) const {
+    CellCRef<Rail> get_rail(test::Vector2i position) const {
         return m_rails.get(position);
     }
 
