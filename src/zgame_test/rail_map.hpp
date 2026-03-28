@@ -11,6 +11,19 @@
 class RailMap : public test::Initialisable, public test::Singleton<RailMap>
 {
 public:
+    int32_t get_cell_size() const {
+        return m_cell_size;
+    }
+
+    GridError set_rail(test::Vector2i position, Type rail) {
+        return m_rails.set(position, Rail(rail));
+    }
+
+    CellCRef<Rail> get_rail(test::Vector2i position) const {
+        return m_rails.get(position);
+    }
+
+private:
     void start(test::Entity e) {
         m_rails = Grid<Rail>(m_width, m_height);
 
@@ -24,18 +37,6 @@ public:
         set_rail({ 0, 2 }, Type::SouthEast);
         set_rail({ 1, 2 }, Type::WestEast);
         set_rail({ 2, 2 }, Type::SouthWest);
-    }
-
-    int32_t get_cell_size() const {
-        return m_cell_size;
-    }
-
-    GridError set_rail(test::Vector2i position, Type rail) {
-        return m_rails.set(position, Rail(rail));
-    }
-
-    CellCRef<Rail> get_rail(test::Vector2i position) const {
-        return m_rails.get(position);
     }
 
 private:

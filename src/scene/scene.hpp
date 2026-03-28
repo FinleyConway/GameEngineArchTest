@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <unordered_map>
 #include <vector>
 #include <typeindex>
@@ -26,6 +25,7 @@ namespace test
 
         void remove_entity(Entity entity);
 
+    private:
         void start();
 
         void update(float dt);
@@ -34,7 +34,6 @@ namespace test
 
         void end();
 
-    private:
         template<typename T, typename TInterface>
         void register_start_system();
 
@@ -45,6 +44,8 @@ namespace test
         void register_singleton(T* component);
 
     private:
+        friend class SceneManager;
+        friend class Application;
         friend class Entity;
 
     private:

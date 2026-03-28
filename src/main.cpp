@@ -3,6 +3,7 @@
 
 #include "zgame_test/mine_cart.hpp"
 #include "zgame_test/rail_map.hpp"
+#include "zgame_test/rail_placer.hpp"
 
 int main()
 {
@@ -19,6 +20,7 @@ int main()
         auto rail_map = scene.create_entity();
         rail_map.add<test::Transform>();
         rail_map.add<RailMap>();
+        rail_map.add<RailPlacer>();
 
         auto mine_cart = scene.create_entity();
         mine_cart.add<test::Transform>(0, 64);

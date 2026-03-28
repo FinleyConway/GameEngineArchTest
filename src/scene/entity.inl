@@ -49,14 +49,19 @@ namespace test
 
     template<typename T, typename Fn>
     void Entity::read_singleton(Fn&& fn) const {
-        auto it = m_scene->m_singletons.find(typeid(T));
+        if constexpr (std::is_same_v<T, Scene>) {
+            if (!m_scene) return;
 
-        if (it == m_scene->m_singletons.end()) {
-            // add log "singleton not created"
-            return;
+            std::forward<Fn>(fn)(*m_scene);
+        } 
+        else 
+        {
+            auto it = m_scene->m_singletons.find(typeid(T));
+            
+            if (it == m_scene->m_singletons.end()) return;
+
+            std::forward<Fn>(fn)(*static_cast<T*>(it->second));
         }
-
-        std::forward<Fn>(fn)(*static_cast<T*>(it->second));
     }
 
     template<typename T, typename Fn>
