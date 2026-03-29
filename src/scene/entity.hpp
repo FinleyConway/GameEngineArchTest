@@ -14,6 +14,9 @@ namespace test
         template<typename T, typename... Args>
         void add(Args&&... args);
 
+        template<typename T>
+        void add_tag();
+
         template<typename T, typename Fn>
         void read(Fn&& fn) const;
 

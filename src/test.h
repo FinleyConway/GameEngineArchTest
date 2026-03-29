@@ -9,6 +9,8 @@
 #include "scene/components/sprite_renderer.hpp"
 #include "scene/components/camera.hpp"
 
+#include "scene/tags/main_camera_tag.hpp"
+
 #include "rendering/sprite.hpp"
 #include "rendering/texture.hpp"
 

@@ -1,7 +1,10 @@
 #pragma once
 
 #include "scene/scene.hpp"
+
 #include <memory>
+
+#include "scene/tags/main_camera_tag.hpp"
 
 namespace test 
 {
@@ -14,9 +17,17 @@ namespace test
         return Entity(entity, this);
     }
 
-    void Scene::remove_entity(Entity entity) {
-        entity.kill();
-    }
+    Entity Scene::get_main_camera() {
+        auto view = m_registry.view<MainCameraTag>();
+
+        for (auto entity : view) {
+            return Entity(entity, this);
+        }
+
+        // add log?
+
+        return Entity();
+    }   
 
     void Scene::start() {
         if (!m_started) {

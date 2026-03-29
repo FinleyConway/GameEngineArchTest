@@ -1,8 +1,11 @@
 #include "rendering/renderer.hpp"
 
-#include "raylib.h"
-#include "utils/to_rl.hpp"
+#include <raylib.h>
+
+#include "scene/components/camera.hpp"
+#include "scene/components/transform.hpp"
 #include "rendering/sprite.hpp"
+#include "utils/to_rl.hpp"
 
 namespace test 
 {
@@ -36,28 +39,36 @@ namespace test
         );
     }   
 
-    Renderer::CameraView Renderer::compute_camera_view(const Transform& transform, const Camera& camera) const {
+    ::Camera2D Renderer::create_rl_camera(Vector2f position, float zoom) {
+        Vector2f world_size = get_world_size(zoom);
+
+        return {
+            .offset = { 
+                .x = world_size.x / 2.0f, 
+                .y = world_size.y / 2.0f 
+            },
+            .target = ToRl::from_vector2f(position),
+            .rotation = 0.0f, // no rotation support
+            .zoom = zoom
+        };
+    }
+
+    Vector2f Renderer::get_world_size(float zoom) {
         float screen_w = ::GetScreenWidth();
         float screen_h = ::GetScreenHeight();
 
-        float world_w = screen_w / camera.get_zoom();
-        float world_h = screen_h / camera.get_zoom();
+        return { screen_w / zoom, screen_h / zoom };
+    }
 
-        ::Camera2D rl_camera {
-            .offset = { 
-                .x = screen_w / 2.0f, 
-                .y = screen_h / 2.0f 
-            },
-            .target = ToRl::from_vector2f(transform.get_position()),
-            .rotation = 0.0f, // no rotation support
-            .zoom = camera.get_zoom()
-        };
+    Renderer::CameraView Renderer::compute_camera_view(const Transform& transform, const Camera& camera) const {
+        Vector2f world_size = get_world_size(camera.get_zoom());
+        ::Camera2D rl_camera = create_rl_camera(transform.get_position(), camera.get_zoom());
 
         FloatRect bounds(
-            rl_camera.target.x - world_w / 2.0f,
-            rl_camera.target.y - world_h / 2.0f,
-            world_w,
-            world_h
+            rl_camera.target.x - world_size.x / 2.0f,
+            rl_camera.target.y - world_size.y / 2.0f,
+            world_size.x,
+            world_size.y
         );
 
         return CameraView(rl_camera, bounds);

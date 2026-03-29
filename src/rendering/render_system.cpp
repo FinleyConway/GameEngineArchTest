@@ -21,6 +21,8 @@ namespace test
 
         view.each([&](auto entity, const Transform& transform, const Camera& camera) {
             m_renderer.draw_in_view(transform, camera, [&](const FloatRect& bounds) {
+                m_renderer.set_background_colour(camera.get_background_colour());
+
                 render_visible_entities(registry, bounds);
             });
         });

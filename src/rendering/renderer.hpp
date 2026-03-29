@@ -2,13 +2,13 @@
 
 #include <raylib.h>
 
-#include "scene/components/transform.hpp"
-#include "scene/components/camera.hpp"
 #include "math/rect.hpp"
 
 namespace test 
 {
     class Sprite;
+    class Camera;
+    class Transform;
 
     class Renderer
     {
@@ -49,7 +49,11 @@ namespace test
 
         void draw_sprite(Vector2f position, const Sprite& sprite, const ::Color& colour);
 
+        static ::Camera2D create_rl_camera(Vector2f position, float zoom);
+
     private:
+        static Vector2f get_world_size(float zoom);
+
         CameraView compute_camera_view(const Transform& transform, const Camera& camera) const;
 
     private:

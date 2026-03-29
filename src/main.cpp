@@ -16,6 +16,7 @@ int main()
         auto camera = scene.create_entity();
         camera.add<test::Transform>();
         camera.add<test::Camera>();
+        camera.add_tag<test::MainCameraTag>();
 
         auto rail_map = scene.create_entity();
         rail_map.add<test::Transform>();

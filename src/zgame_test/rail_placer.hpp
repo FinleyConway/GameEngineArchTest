@@ -1,15 +1,15 @@
 #pragma once
 
 #include <array>
-#include <iostream>
 
 #include "core/input/input.hpp"
 #include "core/input/mouse.hpp"
 #include "math/vector2.hpp"
 #include "scene/entity.hpp"
 #include "scene/interfaces/updatable.hpp"
+#include "scene/scene.hpp"
+#include "scene/components/camera.hpp"
 
-#include "zgame_test/grid.hpp"
 #include "zgame_test/grid_utils.hpp"
 #include "zgame_test/rail_map.hpp"
 #include "zgame_test/rail_types.hpp"
@@ -27,14 +27,20 @@ private:
 
         e.write_singleton<RailMap>([&](RailMap& rail_map) {
             if (test::Input::is_mouse_down(test::MouseButton::Left)) {
-                test::Vector2f world_position; // need to get camera position to_world(test::Input::get_mouse_position());
-                test::Vector2i grid_position = GridUtils::pixel_to_grid(world_position, rail_map.get_cell_size());
+                test::Vector2f world_position; 
 
-                auto err = rail_map.set_rail(grid_position, m_selected_type);
+                e.read_singleton<test::Scene>([&](test::Scene& scene) {
+                    test::Entity camera_e = scene.get_main_camera();
 
-                if (err == GridError::OutOfBounds) {
-                    std::cout << "out of bounds\n";
-                }
+                    camera_e.read<test::Camera>([&](const test::Camera& camera) {
+                        world_position = camera.get_screen_to_world(camera_e, test::Input::get_mouse_position());
+                    });
+                });
+
+                rail_map.set_rail(
+                    GridUtils::pixel_to_grid(world_position, rail_map.get_cell_size()), 
+                    m_selected_type
+                );
             }
         });
     }

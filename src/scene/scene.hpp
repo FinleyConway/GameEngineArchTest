@@ -23,7 +23,7 @@ namespace test
 
         Entity create_entity();
 
-        void remove_entity(Entity entity);
+        Entity get_main_camera();
 
     private:
         void start();
@@ -45,7 +45,7 @@ namespace test
 
     private:
         friend class SceneManager;
-        friend class Application;
+        friend class Application; // <---- bit of a code smelll
         friend class Entity;
 
     private:

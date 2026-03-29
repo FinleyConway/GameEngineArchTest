@@ -12,14 +12,7 @@ namespace test
 {
     template<typename T, typename... Args>
     void Entity::add(Args&&... args) {
-        // make sure tat the entity is alive
-        if (valid()) {
-            // check if it already exists
-            if (has<T>()) {
-                // add log "cannot add a component that a entity already has"
-                return;
-            }
-
+        if (!has<T>()) {
             // add component and apply it to the update group
             auto& component = m_scene->m_registry.template emplace<T>(m_handle, std::forward<Args>(args)...);
 
@@ -35,6 +28,18 @@ namespace test
                 m_scene->template register_update_system<T, Updatable>();
             }
         }
+
+        // add log "cannot add a component that a entity already has"
+    }
+
+    template<typename T>
+    void Entity::add_tag() {
+        if (has<T>()) {
+            // add log "cannot add a tag that a entity already has"
+            return;
+        }
+
+        m_scene->m_registry.template emplace<T>(m_handle);
     }
 
     template<typename T, typename Fn>
