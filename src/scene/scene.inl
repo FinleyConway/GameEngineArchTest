@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/scene.hpp"
+#include "scene/components/transform.hpp"
 
 #include <memory>
 
@@ -11,6 +12,8 @@ namespace mz
 
     Entity Scene::create_entity() {
         entt::entity entity = m_registry.create();
+
+        m_registry.emplace<Transform>(entity);
 
         return Entity(entity, this);
     }

@@ -14,17 +14,14 @@ int main()
 
     app.add_scene("game", [&](mz::Scene& scene) {
         auto camera = scene.create_entity();
-        camera.add<mz::Transform>();
         camera.add<mz::Camera>();
         camera.add_tag<mz::MainCameraTag>();
 
         auto rail_map = scene.create_entity();
-        rail_map.add<mz::Transform>();
         rail_map.add<RailMap>();
         rail_map.add<RailPlacer>();
 
         auto mine_cart = scene.create_entity();
-        mine_cart.add<mz::Transform>(0, 64);
         mine_cart.add<mz::SpriteRenderer>(red_sprite);
         mine_cart.add<MineCart>();
     });
