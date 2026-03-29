@@ -23,6 +23,20 @@ namespace mz
         std::string to_string() const;
 
         Vector2<T> lerp(Vector2 to, float t) const;
+
+    public:
+        struct Hash
+        {
+            size_t operator()(const Vector2& v) const {
+                // https://stackoverflow.com/a/55083395
+                size_t hash = std::hash<int32_t>()(v.x);
+
+                hash <<= sizeof(size_t) * 4;
+                hash ^= std::hash<int32_t>()(v.y);
+
+                return std::hash<size_t>()(hash);
+            }
+        };
     };
 
     using Vector2f = Vector2<float>;

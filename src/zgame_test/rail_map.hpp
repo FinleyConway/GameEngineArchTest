@@ -1,6 +1,6 @@
 #pragma once
 
-#include "test.h"
+#include "maize.h"
 
 #include "zgame_test/grid.hpp"
 #include "zgame_test/rail.hpp"

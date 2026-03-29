@@ -1,5 +1,5 @@
 #include "core/application.hpp"
-#include "test.h"
+#include "maize.h"
 
 #include "zgame_test/mine_cart.hpp"
 #include "zgame_test/rail_map.hpp"

@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include "test.h"
+#include "maize.h"
 
 #include "zgame_test/grid_utils.hpp"
 #include "zgame_test/rail.hpp"
