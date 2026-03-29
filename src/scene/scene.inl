@@ -4,8 +4,6 @@
 
 #include <memory>
 
-#include "scene/tags/main_camera_tag.hpp"
-
 namespace test 
 {
     Scene::Scene(Renderer& renderer) : m_spatial_system(m_registry), m_render_system(renderer, m_spatial_system) { 
@@ -16,18 +14,6 @@ namespace test
 
         return Entity(entity, this);
     }
-
-    Entity Scene::get_main_camera() {
-        auto view = m_registry.view<MainCameraTag>();
-
-        for (auto entity : view) {
-            return Entity(entity, this);
-        }
-
-        // add log?
-
-        return Entity();
-    }   
 
     void Scene::start() {
         if (!m_started) {

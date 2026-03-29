@@ -2,17 +2,11 @@
 
 #include <array>
 
-#include "core/input/input.hpp"
-#include "core/input/mouse.hpp"
-#include "math/vector2.hpp"
-#include "scene/entity.hpp"
-#include "scene/interfaces/updatable.hpp"
-#include "scene/scene.hpp"
-#include "scene/components/camera.hpp"
+#include "test.h"
 
 #include "zgame_test/grid_utils.hpp"
-#include "zgame_test/rail_map.hpp"
 #include "zgame_test/rail_types.hpp"
+#include "zgame_test/rail_map.hpp"
 
 class RailPlacer : public test::Updatable
 {
@@ -25,24 +19,19 @@ private:
     void place_rail(test::Entity e) {
         if (m_selected_type == Type::None) return;
 
-        e.write_singleton<RailMap>([&](RailMap& rail_map) {
+        if (auto* rail_map = e.write<RailMap>()) {
             if (test::Input::is_mouse_down(test::MouseButton::Left)) {
-                test::Vector2f world_position; 
+                test::Vector2f world_position = test::Camera::get_screen_to_world(
+                    test::Camera::get_main(e), 
+                    test::Input::get_mouse_position()
+                );
 
-                e.read_singleton<test::Scene>([&](test::Scene& scene) {
-                    test::Entity camera_e = scene.get_main_camera();
-
-                    camera_e.read<test::Camera>([&](const test::Camera& camera) {
-                        world_position = camera.get_screen_to_world(camera_e, test::Input::get_mouse_position());
-                    });
-                });
-
-                rail_map.set_rail(
-                    GridUtils::pixel_to_grid(world_position, rail_map.get_cell_size()), 
+                rail_map->set_rail(
+                    GridUtils::pixel_to_grid(world_position, rail_map->get_cell_size()), 
                     m_selected_type
                 );
             }
-        });
+        }
     }
 
     void select_rail_type() {

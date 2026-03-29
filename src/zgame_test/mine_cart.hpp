@@ -2,12 +2,7 @@
 
 #include <optional>
 
-// #include "raylib.h"
-#include "scene/entity.hpp"
-#include "scene/interfaces/initialisable.hpp"
-#include "scene/interfaces/updatable.hpp"
-#include "scene/components/transform.hpp"
-#include "math/vector2.hpp"
+#include "test.h"
 
 #include "zgame_test/grid_utils.hpp"
 #include "zgame_test/rail.hpp"
@@ -25,9 +20,9 @@ public:
         m_last_position = position;
         m_current_time = 1;
 
-        e.write<test::Transform>([&](test::Transform& t) {
-            t.set_position(position);
-        });
+        if (auto* t = e.write<test::Transform>()) {
+            t->set_position(position);
+        }
     }
 
 private:
@@ -51,30 +46,24 @@ private:
 
         test::Vector2f current_pos = m_last_position.lerp(m_next_position, t);
 
-        e.write<test::Transform>([&](test::Transform& tform) {
-            tform.set_position(current_pos);
-        });
-
-        // DrawText(std::format("{}", (int)m_current_travelling_dir).c_str(), 5, 5, 12, WHITE);
-        // DrawText(std::format("{}", (int)m_current_rail.get_type()).c_str(), 5, 15, 12, WHITE);
-        // DrawText(std::format("{}", m_last_position.to_string()).c_str(), 5, 25, 12, WHITE);
-        // DrawText(std::format("{}", m_next_position.to_string()).c_str(), 5, 35, 12, WHITE);
-        // DrawText(std::format("{}", t).c_str(), 5, 45, 12, WHITE);
+        if (auto* t = e.write<test::Transform>()) {
+            t->set_position(current_pos);
+        }
     }
 
     void get_next_rail_info(test::Entity e) {
-        e.read_singleton<RailMap>([&](const RailMap& rail_map) {
+        if (const auto* rail_map = e.read<RailMap>()) {
             test::Vector2i grid_position = GridUtils::pixel_to_grid(
-                m_last_position, rail_map.get_cell_size()
+                m_last_position, rail_map->get_cell_size()
             );
 
             if (auto next = get_next_rail(rail_map, grid_position)) {
                 apply_next_rail(next.value(), rail_map);
             }
-        });
+        }
     }
     
-    std::optional<NextRailInfo> get_next_rail(const RailMap& rail_map, test::Vector2i grid_position) {
+    std::optional<NextRailInfo> get_next_rail(const RailMap* rail_map, test::Vector2i grid_position) {
         // get the next travelling direction
         Dir entry_dir = opposite_dir(m_current_travelling_dir);
         Dir exit_dir = m_current_rail.try_get_exit(entry_dir);
@@ -83,7 +72,7 @@ private:
 
         // get the next rail based on the next travelling direction
         test::Vector2i next_grid_pos = grid_position + direction_to_offset(exit_dir);
-        auto maybe_rail = rail_map.get_rail(next_grid_pos);
+        auto maybe_rail = rail_map->get_rail(next_grid_pos);
         
         if (!maybe_rail) return std::nullopt; // no rail
 
@@ -96,10 +85,10 @@ private:
         return NextRailInfo(next_rail, exit_dir, next_grid_pos);
     }
 
-    void apply_next_rail(const NextRailInfo& info, const RailMap& rail_map) {
+    void apply_next_rail(const NextRailInfo& info, const RailMap* rail_map) {
         m_current_rail = info.rail;
         m_current_travelling_dir = info.travel_dir;
-        m_next_position = GridUtils::grid_to_pixel(info.next_grid_pos, rail_map.get_cell_size());
+        m_next_position = GridUtils::grid_to_pixel(info.next_grid_pos, rail_map->get_cell_size());
         m_current_time = 0.0f;
     }
 

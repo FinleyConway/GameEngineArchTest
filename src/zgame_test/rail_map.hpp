@@ -1,9 +1,6 @@
 #pragma once
 
-#include "math/vector2.hpp"
-#include "scene/entity.hpp"
-#include "scene/interfaces/initialisable.hpp"
-#include "scene/interfaces/singleton.hpp"
+#include "test.h"
 
 #include "zgame_test/grid.hpp"
 #include "zgame_test/rail.hpp"

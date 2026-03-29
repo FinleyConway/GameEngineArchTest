@@ -4,6 +4,7 @@
 
 #include "scene/interfaces/initialisable.hpp"
 #include "scene/interfaces/updatable.hpp"
+#include "scene/interfaces/singleton.hpp"
 
 #include "scene/components/transform.hpp"
 #include "scene/components/sprite_renderer.hpp"

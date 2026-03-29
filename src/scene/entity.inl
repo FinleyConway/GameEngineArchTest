@@ -42,53 +42,40 @@ namespace test
         m_scene->m_registry.template emplace<T>(m_handle);
     }
 
-    template<typename T, typename Fn>
-    void Entity::read(Fn&& fn) const {
-        if (!has<T>()) {
-            // add log "cannot read from a component that a entity does not have"
-            return;
+    template<typename T>
+    const T* Entity::read() const {
+        if constexpr (std::derived_from<T, Singleton<T>>) {
+            const auto& s = m_scene->m_singletons;
+
+            if (auto it = s.find(typeid(T)); it != s.end()) {
+                return static_cast<const T*>(it->second);
+            }
+        }
+        else
+        {
+            return m_scene->m_registry.template try_get<T>(m_handle);
         }
 
-        std::forward<Fn>(fn)(m_scene->m_registry.template get<T>(m_handle));
+        return nullptr;
     }
 
-    template<typename T, typename Fn>
-    void Entity::read_singleton(Fn&& fn) const {
-        if constexpr (std::is_same_v<T, Scene>) {
-            if (!m_scene) return;
+    template<typename T>
+    T* Entity::write() {
+        if constexpr (std::derived_from<T, Singleton<T>>) {
+            auto& s = m_scene->m_singletons;
 
-            std::forward<Fn>(fn)(*m_scene);
-        } 
+            if (auto it = s.find(typeid(T)); it != s.end()) {
+                return static_cast<T*>(it->second);
+            }
+        }
         else 
         {
-            auto it = m_scene->m_singletons.find(typeid(T));
-            
-            if (it == m_scene->m_singletons.end()) return;
+            m_scene->m_registry.patch<T>(m_handle);
 
-            std::forward<Fn>(fn)(*static_cast<T*>(it->second));
-        }
-    }
-
-    template<typename T, typename Fn>
-    void Entity::write(Fn&& fn) {
-        if (!has<T>()) {
-            // add log "cannot write to a component that a entity does not have"
-            return;
+            return m_scene->m_registry.template try_get<T>(m_handle);
         }
 
-        m_scene->m_registry.patch<T>(m_handle, std::forward<Fn>(fn));
-    }
-
-    template<typename T, typename Fn>
-    void Entity::write_singleton(Fn&& fn) {
-        auto it = m_scene->m_singletons.find(typeid(T));
-
-        if (it == m_scene->m_singletons.end()) {
-            // add log "singleton not created"
-            return;
-        }
-
-        std::forward<Fn>(fn)(*static_cast<T*>(it->second));
+        return nullptr;
     }
 
     template<typename T>
@@ -106,15 +93,28 @@ namespace test
         m_scene->m_registry.template remove<T>(m_handle);
     }
 
-    inline void Entity::kill() {
+    Entity Entity::create() {
+        return m_scene->create_entity();
+    }
+
+    void Entity::kill() {
         m_scene->m_registry.destroy(m_handle);
         m_handle = entt::null;
     }
 
-    inline bool Entity::valid() const {
+    bool Entity::valid() const {
         return m_scene->m_registry.valid(m_handle);
     }
 
-    inline Entity::Entity(entt::entity handle, Scene* scene)
+    template<typename T, typename Fn>
+    void Entity::get_entities_with(Fn&& fn) const {
+        auto view = m_scene->m_registry.view<T>();
+
+        for (auto entity : view) {
+            std::forward<Fn>(fn)(Entity(entity, m_scene));
+        }
+    }
+
+    Entity::Entity(entt::entity handle, Scene* scene)
         : m_handle(handle), m_scene(scene) {}
 }

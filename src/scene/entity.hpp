@@ -17,17 +17,11 @@ namespace test
         template<typename T>
         void add_tag();
 
-        template<typename T, typename Fn>
-        void read(Fn&& fn) const;
+        template<typename T>
+        const T* read() const;
 
-        template<typename T, typename Fn>
-        void read_singleton(Fn&& fn) const;
-
-        template<typename T, typename Fn>
-        void write(Fn&& fn);
-
-        template<typename T, typename Fn>
-        void write_singleton(Fn&& fn);
+        template<typename T>
+        T* write();
 
         template<typename T>
         bool has() const;
@@ -35,9 +29,14 @@ namespace test
         template<typename T>
         void remove();
 
+        Entity create();
+
         void kill();
 
         bool valid() const;
+
+        template<typename T, typename Fn>
+        void get_entities_with(Fn&& fn) const;
 
     private:
         friend class Scene;

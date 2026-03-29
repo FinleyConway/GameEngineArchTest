@@ -23,9 +23,6 @@ namespace test
 
         Entity create_entity();
 
-        Entity get_main_camera();
-
-    private:
         void start();
 
         void update(float dt);
@@ -34,6 +31,7 @@ namespace test
 
         void end();
 
+    private:
         template<typename T, typename TInterface>
         void register_start_system();
 
@@ -44,8 +42,6 @@ namespace test
         void register_singleton(T* component);
 
     private:
-        friend class SceneManager;
-        friend class Application; // <---- bit of a code smelll
         friend class Entity;
 
     private:

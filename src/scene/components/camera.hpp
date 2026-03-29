@@ -2,10 +2,11 @@
 
 #include <raylib.h>
 
-#include "scene/entity.hpp"
 #include "scene/components/transform.hpp"
+#include "scene/tags/main_camera_tag.hpp"
 #include "rendering/renderer.hpp"
 #include "math/vector2.hpp"
+#include "scene/entity.hpp"
 #include "utils/to_rl.hpp"
 
 namespace test 
@@ -31,14 +32,22 @@ namespace test
             return m_background_colour;
         }
 
-        Vector2f get_screen_to_world(Entity e, Vector2f screen_position) const {
-            Vector2f position;
+    public:
+        static Entity get_main(Entity e) {
+            e.get_entities_with<MainCameraTag>([](Entity e) {
+                return e;
+            }); 
 
-            e.read<Transform>([&](auto& t) {
-                position = t.get_position();
-            });
+            return Entity();
+        }
 
-            ::Camera2D rl_camera = Renderer::create_rl_camera(position, m_zoom);
+        static Vector2f get_screen_to_world(Entity camera_entity, Vector2f screen_position) {
+            if (!camera_entity.has<Camera>()) return Vector2f(0, 0); // add log?
+
+            const auto* t = camera_entity.read<Transform>();
+            const auto* c = camera_entity.read<Camera>();
+
+            ::Camera2D rl_camera = Renderer::create_rl_camera(t->get_position(), c->get_zoom());
             ::Vector2 world_position = ::GetScreenToWorld2D(ToRl::from_vector2f(screen_position), rl_camera);
 
             return Vector2f(world_position.x, world_position.y);
