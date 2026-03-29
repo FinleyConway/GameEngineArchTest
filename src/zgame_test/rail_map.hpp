@@ -5,23 +5,23 @@
 #include "zgame_test/grid.hpp"
 #include "zgame_test/rail.hpp"
 
-class RailMap : public test::Initialisable, public test::Singleton<RailMap>
+class RailMap : public mz::Initialisable, public mz::Singleton<RailMap>
 {
 public:
     int32_t get_cell_size() const {
         return m_cell_size;
     }
 
-    GridError set_rail(test::Vector2i position, Type rail) {
+    GridError set_rail(mz::Vector2i position, Type rail) {
         return m_rails.set(position, Rail(rail));
     }
 
-    CellCRef<Rail> get_rail(test::Vector2i position) const {
+    CellCRef<Rail> get_rail(mz::Vector2i position) const {
         return m_rails.get(position);
     }
 
 private:
-    void start(test::Entity e) {
+    void start(mz::Entity e) {
         m_rails = Grid<Rail>(m_width, m_height);
 
         set_rail({ 0, 0 }, Type::NorthEast);

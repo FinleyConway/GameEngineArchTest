@@ -4,7 +4,7 @@
 #include "rendering/renderer.hpp"
 #include "scene/scene_manager.hpp"
 
-namespace test
+namespace mz
 {
     struct ApplicationConfig
     {

@@ -5,7 +5,7 @@
 
 #include "math/vector2.hpp"
 
-namespace test
+namespace mz
 {
     template<typename T>
     class Rect

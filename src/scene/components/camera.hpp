@@ -9,7 +9,7 @@
 #include "scene/entity.hpp"
 #include "utils/to_rl.hpp"
 
-namespace test 
+namespace mz 
 {
     class Camera 
     {

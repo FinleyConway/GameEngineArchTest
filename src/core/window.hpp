@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace test
+namespace mz
 {
     class Window
     {

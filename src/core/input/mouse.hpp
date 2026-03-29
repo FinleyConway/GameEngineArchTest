@@ -2,7 +2,7 @@
 
 #include <raylib.h>
 
-namespace test
+namespace mz
 {
     enum class MouseButton : int
     {

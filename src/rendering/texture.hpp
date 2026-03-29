@@ -4,7 +4,7 @@
 
 #include <raylib.h>
 
-namespace test
+namespace mz
 {
     class Texture
     {

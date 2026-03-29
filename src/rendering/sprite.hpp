@@ -4,7 +4,7 @@
 #include "math/vector2.hpp"
 #include "rendering/texture.hpp"
 
-namespace test 
+namespace mz 
 {
     class Sprite
     {

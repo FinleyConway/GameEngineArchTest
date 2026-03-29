@@ -8,7 +8,7 @@
 
 #include "math/rect.hpp"
 
-namespace test 
+namespace mz 
 {
     // Allow to split up the scene into fixed sized chunks to allow querying from a region.
     class SpatialIndex

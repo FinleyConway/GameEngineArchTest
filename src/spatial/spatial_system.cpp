@@ -3,7 +3,7 @@
 #include "scene/components/sprite_renderer.hpp"
 #include "scene/components/transform.hpp"
 
-namespace test
+namespace mz
 {
     SpatialSystem::SpatialSystem(entt::registry& registry) : m_registry(registry), m_spatial_index(32.0f) {
         registry.on_update<Transform>()

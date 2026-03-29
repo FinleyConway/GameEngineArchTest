@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace test 
+namespace mz 
 {
     Scene::Scene(Renderer& renderer) : m_spatial_system(m_registry), m_render_system(renderer, m_spatial_system) { 
     }

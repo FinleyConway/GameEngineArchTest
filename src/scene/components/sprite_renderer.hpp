@@ -4,7 +4,7 @@
 #include "rendering/sprite.hpp"
 #include "math/vector2.hpp"
 
-namespace test 
+namespace mz 
 {
     class SpriteRenderer
     {

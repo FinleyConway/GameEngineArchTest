@@ -2,7 +2,7 @@
 
 #include "math/vector2.hpp"
 
-namespace test 
+namespace mz 
 {
     class Transform
     {

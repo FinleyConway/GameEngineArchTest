@@ -1,6 +1,6 @@
 #include "spatial/spatial_index.hpp"
 
-namespace test
+namespace mz
 {
     SpatialIndex::SpatialIndex(float cell_size) : m_cell_size(cell_size) {
         assert((void("spatial index cell size must not be 0"), cell_size != 0.0f));

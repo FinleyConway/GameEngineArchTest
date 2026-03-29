@@ -2,7 +2,7 @@
 
 #include <entt/entt.hpp>
 
-namespace test
+namespace mz
 {
     class Scene;
 

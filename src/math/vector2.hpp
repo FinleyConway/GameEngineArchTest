@@ -3,7 +3,7 @@
 #include <string>
 #include <cstdint>
 
-namespace test
+namespace mz
 {
     template<typename T>
     class Vector2

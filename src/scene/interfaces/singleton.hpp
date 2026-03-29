@@ -1,6 +1,6 @@
 #pragma once
 
-namespace test 
+namespace mz 
 {
     template<typename TComponent>
     class Singleton { };

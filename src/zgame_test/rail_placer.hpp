@@ -8,22 +8,22 @@
 #include "zgame_test/rail_types.hpp"
 #include "zgame_test/rail_map.hpp"
 
-class RailPlacer : public test::Updatable
+class RailPlacer : public mz::Updatable
 {
 private:
-    void update(test::Entity e, float dt) {
+    void update(mz::Entity e, float dt) {
         select_rail_type();
         place_rail(e);
     }
 
-    void place_rail(test::Entity e) {
+    void place_rail(mz::Entity e) {
         if (m_selected_type == Type::None) return;
 
         if (auto* rail_map = e.write<RailMap>()) {
-            if (test::Input::is_mouse_down(test::MouseButton::Left)) {
-                test::Vector2f world_position = test::Camera::get_screen_to_world(
-                    test::Camera::get_main(e), 
-                    test::Input::get_mouse_position()
+            if (mz::Input::is_mouse_down(mz::MouseButton::Left)) {
+                mz::Vector2f world_position = mz::Camera::get_screen_to_world(
+                    mz::Camera::get_main(e), 
+                    mz::Input::get_mouse_position()
                 );
 
                 rail_map->set_rail(
@@ -35,7 +35,7 @@ private:
     }
 
     void select_rail_type() {
-        float mouse_wheel = test::Input::get_mouse_axis();
+        float mouse_wheel = mz::Input::get_mouse_axis();
         int delta = (mouse_wheel > 0.0f) ? 1 : (mouse_wheel < 0.0f ? -1 : 0);
 
         if (delta != 0) {

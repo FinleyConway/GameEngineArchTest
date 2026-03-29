@@ -1,6 +1,6 @@
 #include "rendering/sprite.hpp"
 
-namespace test
+namespace mz
 {
     Sprite::Sprite(const Texture& texture, const FloatRect& texture_rect) 
         : m_texture_rect(texture_rect), m_pivot(generate_pivot(texture_rect)), m_texture(texture) { 
@@ -23,7 +23,7 @@ namespace test
     }
 
     FloatRect Sprite::get_bounds() const {
-        return test::FloatRect(
+        return mz::FloatRect(
             -m_pivot.x,
             -m_pivot.y,
             m_texture_rect.w,

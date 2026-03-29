@@ -1,6 +1,6 @@
 #include "rendering/texture.hpp"
 
-namespace test
+namespace mz
 {
     Texture::Texture() : m_handle({}) {
     }

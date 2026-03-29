@@ -29,7 +29,7 @@ public:
         m_data(width * height), m_width(width), m_height(height) {
     }
 
-    explicit Grid(test::Vector2i size) :
+    explicit Grid(mz::Vector2i size) :
         m_data(size.x * size.y), m_width(size.x), m_height(size.y) {
     }
 
@@ -45,7 +45,7 @@ public:
         return x >= 0 && y >= 0 && x < m_width && y < m_height;
     }
 
-    bool is_within(test::Vector2i position) const {
+    bool is_within(mz::Vector2i position) const {
         return is_within(position.x, position.y);
     }
 
@@ -56,7 +56,7 @@ public:
         return std::ref(m_data[get_index(x, y)]);
     }
 
-    CellRef<T> get(test::Vector2i position) {
+    CellRef<T> get(mz::Vector2i position) {
         return get(position.x, position.y);
     }
 
@@ -67,7 +67,7 @@ public:
         return std::cref(m_data[get_index(x, y)]);
     }
 
-    CellCRef<T> get(test::Vector2i position) const {
+    CellCRef<T> get(mz::Vector2i position) const {
         return get(position.x, position.y);
     }
 
@@ -80,7 +80,7 @@ public:
         return GridError::None;
     }
 
-    GridError set(test::Vector2i position, const T& value) {
+    GridError set(mz::Vector2i position, const T& value) {
         return set(position.x, position.y, value);
     }
 

@@ -6,7 +6,7 @@
 #include "spatial/spatial_index.hpp"
 #include "math/rect.hpp"
 
-namespace test 
+namespace mz 
 {
     class SpatialSystem 
     {

@@ -12,7 +12,7 @@
 #include "rendering/render_system.hpp"
 #include "spatial/spatial_system.hpp"
 
-namespace test 
+namespace mz 
 {
     class Renderer;
 

@@ -5,7 +5,7 @@
 
 #include "scene/scene.hpp"
 
-namespace test
+namespace mz
 {
     class SceneManager
     {

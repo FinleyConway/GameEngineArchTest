@@ -1,6 +1,6 @@
 #include "utils/to_rl.hpp"
 
-namespace test
+namespace mz
 {
     ::Vector2 ToRl::from_vector2f(Vector2f v) {
         return {

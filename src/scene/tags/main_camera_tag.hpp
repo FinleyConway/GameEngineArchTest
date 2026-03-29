@@ -1,6 +1,6 @@
 #pragma once
 
-namespace test
+namespace mz
 {
     class MainCameraTag { };
 }

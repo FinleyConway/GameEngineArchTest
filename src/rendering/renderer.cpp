@@ -7,7 +7,7 @@
 #include "rendering/sprite.hpp"
 #include "utils/to_rl.hpp"
 
-namespace test 
+namespace mz 
 {
     void Renderer::draw_no_camera() {
         const char* text = "No camera in the scene!";

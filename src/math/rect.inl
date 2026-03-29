@@ -4,7 +4,7 @@
 
 #include "math/rect.hpp"
 
-namespace test
+namespace mz
 {
     template<typename T>
     Rect<T>::Rect(T x, T y, T w, T h) : x(x), y(y), w(w), h(h) {}

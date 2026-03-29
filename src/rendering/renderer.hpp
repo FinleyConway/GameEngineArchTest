@@ -4,7 +4,7 @@
 
 #include "math/rect.hpp"
 
-namespace test 
+namespace mz 
 {
     class Sprite;
     class Camera;

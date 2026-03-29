@@ -2,7 +2,7 @@
 
 #include <raylib.h>
 
-namespace test
+namespace mz
 {
     bool Input::is_key_down(Key key) {
         return ::IsKeyPressed(key_to_raylib(key));

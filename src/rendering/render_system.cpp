@@ -6,7 +6,7 @@
 #include "scene/components/transform.hpp"
 #include "scene/components/sprite_renderer.hpp"
 
-namespace test
+namespace mz
 {
     RenderSystem::RenderSystem(Renderer& renderer, SpatialSystem& spatial) : m_renderer(renderer), m_spatial(spatial) {
     }

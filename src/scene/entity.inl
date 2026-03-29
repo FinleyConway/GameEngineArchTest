@@ -8,7 +8,7 @@
 #include "scene/interfaces/updatable.hpp"
 #include "scene/interfaces/singleton.hpp"
 
-namespace test 
+namespace mz 
 {
     template<typename T, typename... Args>
     void Entity::add(Args&&... args) {
