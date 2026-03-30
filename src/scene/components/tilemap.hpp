@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <algorithm>
+#include <concepts>
 #include <vector>
 #include <cstdint>
 
@@ -9,9 +10,9 @@
 
 namespace mz 
 {
+    template<std::default_initializable T>
     class Tilemap
     {
-    using TileID = uint16_t;    
     struct Chunk;
 
     public:
@@ -19,7 +20,7 @@ namespace mz
             m_chunk_size(chunkSize), m_chunk_area(chunkSize * chunkSize) {
         }
 
-        TileID get_tile(Vector2i position) const {
+        const T& get_tile(Vector2i position) const {
             if (auto* chunk = try_get_chunk(position)) {
                 if (chunk->tiles.size() == m_chunk_area) {
                     return chunk->tiles[get_index(position)];
@@ -33,7 +34,7 @@ namespace mz
             return get_tile(position) != c_empty_tile;
         }
 
-        void place_tile(Vector2i position, TileID tile) {
+        void place_tile(Vector2i position, const T& tile) {
             auto& chunk = get_chunk(position);
 
             chunk.tiles[get_index(position)] = tile;
@@ -86,7 +87,7 @@ namespace mz
 
             const auto& tiles = it->second.tiles;
 
-            if (std::all_of(tiles.begin(), tiles.end(), [](TileID t) { return t == c_empty_tile; })) {
+            if (std::all_of(tiles.begin(), tiles.end(), [](const T& t) { return t == c_empty_tile; })) {
                 m_tilemap.erase(it);
             }
         }
@@ -117,7 +118,7 @@ namespace mz
     private:
         struct Chunk
         {
-            std::vector<TileID> tiles;
+            std::vector<T> tiles;
             bool dirty = true;
         };
 
@@ -126,6 +127,6 @@ namespace mz
         uint32_t m_chunk_size;
         uint32_t m_chunk_area;
 
-        static constexpr TileID c_empty_tile = 0;
+        static constexpr T c_empty_tile = {};
     };
 }
