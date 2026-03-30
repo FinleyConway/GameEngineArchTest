@@ -42,6 +42,7 @@ namespace mz
         }
 
         static Vector2f get_screen_to_world(Entity camera_entity, Vector2f screen_position) {
+            if (!camera_entity.valid()) return Vector2f(0, 0);
             if (!camera_entity.has<Camera>()) return Vector2f(0, 0); // add log?
 
             const auto* t = camera_entity.read<Transform>();

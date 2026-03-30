@@ -12,6 +12,11 @@ namespace mz
 {
     template<typename T, typename... Args>
     void Entity::add(Args&&... args) {
+        if (!valid()) {
+            // add log "Attempting to add component to invalid entity"
+            return;
+        }
+
         if (!has<T>()) {
             // add component and apply it to the update group
             auto& component = m_scene->m_registry.template emplace<T>(m_handle, std::forward<Args>(args)...);
@@ -34,6 +39,11 @@ namespace mz
 
     template<typename T>
     void Entity::add_tag() {
+        if (!valid()) {
+            // add log "Attempting to add tag to invalid entity"
+            return;
+        }
+
         if (has<T>()) {
             // add log "cannot add a tag that a entity already has"
             return;
@@ -44,6 +54,8 @@ namespace mz
 
     template<typename T>
     const T* Entity::read() const {
+        if (!valid()) return nullptr;
+
         if constexpr (std::derived_from<T, Singleton<T>>) {
             const auto& s = m_scene->m_singletons;
 
@@ -61,6 +73,8 @@ namespace mz
 
     template<typename T>
     T* Entity::write() {
+        if (!valid()) return nullptr;
+
         if constexpr (std::derived_from<T, Singleton<T>>) {
             auto& s = m_scene->m_singletons;
 
@@ -85,6 +99,11 @@ namespace mz
 
     template<typename T>
     void Entity::remove() {
+        if (!valid()) {
+            // add log ""Attempting to remove component from invalid entity""
+            return;
+        }
+
         if (!has<T>()) {
             // add log "cannot remove a component that a entity does not have"
             return;
@@ -94,20 +113,37 @@ namespace mz
     }
 
     Entity Entity::create() {
+        if (!valid()) {
+            // add log "attempting to create a entity from invalid entity"
+            return Entity();
+        }
+
         return m_scene->create_entity();
     }
 
     void Entity::kill() {
+        if (!valid()) {
+            // add log "attempting to kill invalid entity"
+            return;
+        }
+
         m_scene->m_registry.destroy(m_handle);
         m_handle = entt::null;
     }
 
     bool Entity::valid() const {
+        if (m_scene == nullptr) return false;
+
         return m_scene->m_registry.valid(m_handle);
     }
 
     template<typename T, typename Fn>
     void Entity::get_entities_with(Fn&& fn) const {
+        if (!valid()) {
+            // add log "attempting get_entities_with from invalid entity"
+            return;
+        }
+
         auto view = m_scene->m_registry.view<T>();
 
         for (auto entity : view) {
